@@ -46,6 +46,9 @@ devDependencies:
   '@types/passport-local':
     specifier: ^1.0.38
     version: 1.0.38
+  prettier:
+    specifier: ^3.3.2
+    version: 3.3.2
   tsup:
     specifier: ^8.1.0
     version: 8.1.0(typescript@5.4.5)
@@ -1436,6 +1439,12 @@ packages:
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.4.5
+    dev: true
+
+  /prettier@3.3.2:
+    resolution: {integrity: sha512-rAVeHYMcv8ATV5d508CFdn+8/pHPpXeIid1DdrPwXnaAdH7cqjVbpJaT5eq4yRAFU/lsbwYwSF/n5iNrdJHPQA==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /proxy-addr@2.0.7:

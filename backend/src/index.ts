@@ -1,4 +1,3 @@
-
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
@@ -8,11 +7,10 @@ import { Strategy as LocalStrategy } from 'passport-local';
 
 const MemoryStore = memoryStore(session)
 const store = new MemoryStore({
-    checkPeriod: 3600000 // prune expired entries every 1h
+    checkPeriod: 3600000
 })
 
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-    // check if credentials exist in DB
     if (username === 'Jim' && password === "123") {
         console.log('Local Strategy - SUCCESS')
         const user = { user: 'Jim', role: 'Admin', id: '42' }
@@ -21,29 +19,16 @@ passport.use(new LocalStrategy(function verify(username, password, cb) {
     console.log('Local Strategy - FAILED')
     return cb(null, false, { message: 'Incorrect username or password.' })
 }));
-
 passport.serializeUser(function (user, cb) {
     console.log('Serializer: ', user)
     cb(null, user);
 });
-
 passport.deserializeUser(function (user, cb) {
-    // check if user is in memorystore, then deserialize it
     console.log('DeserializeUser: ', user)
     cb(null, user as Record<string, string>);
 });
 
-
 const authRouter = express.Router();
-authRouter.get('/authed', function (req, res, next) {
-    // Question: Why is the user undefined? I need the user to do authorization :(
-    console.log('authRouter - User: ', JSON.stringify(req.user)) // req.user = undefined
-    res.json('Login successfull');
-});
-authRouter.get('/notAuthed', function (req, res, next) {
-    res.json('Login failed');
-});
-
 authRouter.post(
     '/login',
     passport.authenticate('local', { failureMessage: true, failureRedirect: '/notAuthed' }),
@@ -51,8 +36,16 @@ authRouter.post(
         console.log('Successfull authentication - User: ', JSON.stringify(req.user))
         res.redirect('/authed');
     });
-const app = express();
+authRouter.get('/authed', function (req, res, next) {
+    // Question: Why is the user undefined? I need the user to do authorization :(
+    console.log('authRouter - User: ', JSON.stringify(req.user)) // req.user = undefined
+    res.json('Login successfull');
+});
+authRouter.get('/notAuthed', function (req, res, next) {
+    res.json('Login failed');
+});    
 
+const app = express();
 app.use(cors({ origin: '*' }))
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
@@ -64,6 +57,5 @@ app.use(session({
     saveUninitialized: false,
 }));
 app.use(passport.authenticate('session'));
-
 app.use('/', authRouter)
 app.listen(3000);
