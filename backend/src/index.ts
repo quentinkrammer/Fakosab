@@ -6,25 +6,24 @@ import z from 'zod';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session'
-import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import memoryStore from 'memorystore'
+
+const MemoryStore = memoryStore(session)
 
 
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-    console.log('hier')
     if (username === 'Bastian' && password === "123") return cb(null, { user: 'Bastian', role: 'Admin', id: '1337' })
     return cb(null, false, { message: 'Incorrect username or password.' })
 }));
 
 passport.serializeUser(function (user, cb) {
-    console.log('hier1')
     process.nextTick(function () {
         cb(null, user);
     });
 });
 
 passport.deserializeUser(function (user, cb) {
-    console.log('hier2')
     process.nextTick(function () {
         return cb(null, user as Record<string, string>);
     });
@@ -75,10 +74,14 @@ authRouter.post('/login/password', passport.authenticate('local', {
 const app = express();
 
 app.use(cors({ origin: '*' }))
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
+    cookie: { maxAge: 3600000 },
+    store: new MemoryStore({
+        checkPeriod: 3600000 // prune expired entries every 1h
+    }),
     saveUninitialized: false,
 }));
 app.use(passport.authenticate('session'));
