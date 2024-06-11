@@ -7,6 +7,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 
 passport.use(new LocalStrategy(function verify(username, password, cb) {
@@ -73,6 +74,7 @@ authRouter.post('/login/password', passport.authenticate('local', {
 }));
 const app = express();
 
+app.use(cors({ origin: '*' }))
 app.use(cookieParser());
 app.use(session({
     secret: 'keyboard cat',
