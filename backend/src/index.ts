@@ -11,22 +11,24 @@ import memoryStore from 'memorystore'
 
 const MemoryStore = memoryStore(session)
 
-
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-    if (username === 'Bastian' && password === "123") return cb(null, { user: 'Bastian', role: 'Admin', id: '1337' })
+    if (username === 'Bastian' && password === "123") {
+        console.log('Local Strategy - User added to Request')
+        return cb(null, { user: 'Bastian', role: 'Admin', id: '1337' })
+    }
+    console.log('Local Strategy - Failed to autheticate user.')
     return cb(null, false, { message: 'Incorrect username or password.' })
 }));
 
 passport.serializeUser(function (user, cb) {
-    process.nextTick(function () {
-        cb(null, user);
-    });
+    console.log('Serializer: ', user)
+    cb(null, user);
 });
 
 passport.deserializeUser(function (user, cb) {
-    process.nextTick(function () {
-        return cb(null, user as Record<string, string>);
-    });
+    // find user in memorystore
+    console.log('DeserializeUser: ', user)
+    cb(null, user as Record<string, string>);
 });
 
 // created for each request
@@ -34,31 +36,22 @@ const createContext = ({
     req,
     res,
 }: trpcExpress.CreateExpressContextOptions) => {
-    console.log('hier3')
+    console.log('TRPC context', JSON.stringify(req.user))
     return ({
-        session: 'some_session'
+        user: 'some_session'
     })
 }
 type Context = Awaited<ReturnType<typeof createContext>>;
 const t = initTRPC.context<Context>().create();
 const appRouter = t.router({
-    getUser: t.procedure.input(z.string()).query((opts) => {
-        opts.input;
-        return { id: opts.input, name: 'Bilbo' };
+    getFoo: t.procedure.query((opts) => {
+        return "Foo";
     }),
-
-    // createUser: t.procedure
-    //     .input(z.object({ name: z.string().min(5) }))
-    //     .mutation(async (opts) => {
-    //         // use your ORM of choice
-    //         return await UserModel.create({
-    //             data: opts.input,
-    //         });
-    //     }),
 });
 
 var authRouter = express.Router();
 authRouter.get('/', function (req, res, next) {
+    console.log('authRouter: ', JSON.stringify(req.user))
     res.json('Login successfull');
 });
 authRouter.get('/login', function (req, res, next) {
@@ -67,10 +60,13 @@ authRouter.get('/login', function (req, res, next) {
 authRouter.post('/foo/bar', function (req, res, next) {
     res.json('foo bar');
 });
-authRouter.post('/login/password', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
+authRouter.post(
+    '/login/password',
+    passport.authenticate('local', { failureMessage: true, failureRedirect: '/login' }),
+    function (req, res) {
+        console.log('Successfull authentication', JSON.stringify(req.user))
+        res.redirect('/');
+    });
 const app = express();
 
 app.use(cors({ origin: '*' }))
