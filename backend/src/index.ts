@@ -36,7 +36,8 @@ passport.deserializeUser(function (user, cb) {
 
 const authRouter = express.Router();
 authRouter.get('/authed', function (req, res, next) {
-    console.log('authRouter - User: ', JSON.stringify(req.user))
+    // Question: Why is the user undefined? I need the user to do authorization :(
+    console.log('authRouter - User: ', JSON.stringify(req.user)) // req.user = undefined
     res.json('Login successfull');
 });
 authRouter.get('/notAuthed', function (req, res, next) {
