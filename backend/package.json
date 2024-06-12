@@ -4,8 +4,8 @@
   "description": "Generiere Fahrtkosten Abrechnungen",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.js\"",
-    "format" : "prettier ./src --write"
+    "dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.js\" --env.NODE_ENV development",
+    "format": "prettier ./src --write"
   },
   "author": "Bastian Opatz",
   "license": "ISC",
