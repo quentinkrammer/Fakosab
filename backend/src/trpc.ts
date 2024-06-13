@@ -1,6 +1,6 @@
 import { TRPCError, initTRPC } from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import z from "zod"
+import z, { ZodError } from "zod";
 
 const userSchema = z.object({
     username: z.string(),
@@ -21,7 +21,18 @@ export const createContext = ({
 }
 type Context = Awaited<ReturnType<typeof createContext>>;
 
-export const trpc = initTRPC.context<Context>().create();
+export const trpc = initTRPC.context<Context>().create({
+    errorFormatter({ shape, error }) {
+        return {
+            ...shape,
+            data: {
+                ...shape.data,
+                zodError:
+                    error.cause instanceof ZodError ? error.cause.flatten() : null,
+            },
+        };
+    },
+});
 
 export const authedProcedure = trpc.procedure.use(async function isAuthed(opts) {
     const { ctx } = opts;
