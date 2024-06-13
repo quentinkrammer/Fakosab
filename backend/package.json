@@ -7,7 +7,11 @@
   "scripts": {
     "dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.cjs\" --env.NODE_ENV development",
     "format": "prettier ./src --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "author": "Bastian Opatz",
   "license": "ISC",
@@ -22,8 +26,12 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@libsql/client": "^0.6.2",
     "@trpc/server": "^10.45.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.22.7",
+    "drizzle-orm": "^0.31.2",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "memorystore": "^1.6.7",

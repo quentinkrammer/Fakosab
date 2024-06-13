@@ -29,10 +29,10 @@ router.post(
     }),
 );
 
-router.get("/authed", function (req, res, next) {
+router.get("/authed", function (_, res) {
     res.json("Login successfull");
 });
-router.get("/notAuthed", function (req, res, next) {
+router.get("/notAuthed", function (_, res) {
     res.json("Login failed");
 });
 

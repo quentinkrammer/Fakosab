@@ -9,7 +9,6 @@ const userSchema = z.object({
 })
 export const createContext = ({
     req,
-    res,
 }: trpcExpress.CreateExpressContextOptions) => {
     const user = process.env['NODE_ENV'] === 'development' ?
         { username: 'DevEnvUser', 'role': 'admin', 'userId': 42 } : req.user
