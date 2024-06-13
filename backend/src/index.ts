@@ -4,9 +4,9 @@ import express from "express";
 import session from "express-session";
 import memoryStore from "memorystore";
 import passport from "passport";
-import { createContext } from './trpc';
-import { trpcRouter } from './trpcRouter';
-import { authRouter } from './authRouter';
+import { createContext } from './trpc.js';
+import { trpcRouter } from './trpcRouter.js';
+import { authRouter } from './authRouter.js';
 
 const MemoryStore = memoryStore(session);
 
