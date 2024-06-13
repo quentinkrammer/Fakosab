@@ -26,3 +26,13 @@ export const posts = createTable(
         nameIndex: index("name_idx").on(example.name),
     })
 );
+
+export const user = createTable(
+    "user",
+    {
+        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+        username: text("username", { length: 256 }).notNull(),
+        password: text("password", { length: 64 }).notNull(),
+        resetPassword: text("reset_password", { length: 64 }).notNull(),
+    }
+);
