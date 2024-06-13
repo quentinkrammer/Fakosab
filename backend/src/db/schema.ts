@@ -27,12 +27,22 @@ export const posts = createTable(
     })
 );
 
-export const user = createTable(
-    "user",
+export const users = createTable(
+    "users",
     {
         id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-        username: text("username", { length: 256 }).notNull(),
+        username: text("username", { length: 256 }).notNull().unique(),
         password: text("password", { length: 64 }).notNull(),
-        resetPassword: text("reset_password", { length: 64 }).notNull(),
+        resetPassword: text("reset_password", { length: 64 }),
+        isAdmin: int('isAdmin', { mode: 'boolean' })
+    }
+);
+
+export const initialUsers = createTable(
+    "initialUsers",
+    {
+        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+        username: text("username", { length: 256 }).notNull().unique(),
+        initialPassword: text("initial_password", { length: 64 }).notNull()
     }
 );
