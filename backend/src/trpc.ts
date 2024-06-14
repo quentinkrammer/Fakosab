@@ -1,5 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
+import superjson from "superjson";
 import z, { ZodError } from "zod";
 import { db } from "./db/index.js";
 
@@ -25,6 +26,7 @@ export const createContext = ({
 type Context = Awaited<ReturnType<typeof createContext>>;
 
 export const trpc = initTRPC.context<Context>().create({
+  transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
       ...shape,
