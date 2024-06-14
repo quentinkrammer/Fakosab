@@ -20,7 +20,7 @@
     "exactOptionalPropertyTypes": true,
   },
   "include": [
-    "src/**/*.ts",
+    "**/*.ts",
     "drizzle.config.ts"
   ],
   "exclude": [
