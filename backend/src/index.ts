@@ -4,9 +4,10 @@ import express from "express";
 import session from "express-session";
 import memoryStore from "memorystore";
 import passport from "passport";
+import { env } from "../env.js";
+import { authRouter } from "./authRouter.js";
 import { createContext } from "./trpc.js";
 import { trpcRouter } from "./trpcRouter.js";
-import { authRouter } from "./authRouter.js";
 
 const MemoryStore = memoryStore(session);
 
@@ -34,4 +35,4 @@ app.use(
     createContext,
   }),
 );
-app.listen(3000);
+app.listen(env.port);

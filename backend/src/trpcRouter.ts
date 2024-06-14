@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { env } from "../env.js";
 import { initialUsers, users } from "./db/schema.js";
 import {
   adminProcedure,
@@ -10,7 +11,6 @@ import {
   trpc,
 } from "./trpc.js";
 import { randomString } from "./utils/randomString.js";
-import { env } from "../env.js";
 
 export const trpcRouter = trpc.router({
   getFoo: authedProcedure.query(() => {
@@ -64,3 +64,5 @@ export const trpcRouter = trpc.router({
       return newUser;
     }),
 });
+
+export type AppRouter = typeof trpcRouter;
