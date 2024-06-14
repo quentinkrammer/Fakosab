@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite-node --mode development --watch src/index.ts",
     "build": "vite build",
-    "format": "prettier ./src --write",
+    "format": "prettier ./src --write --config ../.prettierrc.cjs",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

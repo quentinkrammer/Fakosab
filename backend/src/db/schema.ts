@@ -13,36 +13,30 @@ import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 export const createTable = sqliteTableCreator((name) => name);
 
 export const posts = createTable(
-    "post",
-    {
-        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-        name: text("name", { length: 256 }),
-        createdAt: int("created_at", { mode: "timestamp" })
-            .default(sql`CURRENT_TIMESTAMP`)
-            .notNull(),
-        updatedAt: int("updatedAt", { mode: "timestamp" }),
-    },
-    (example) => ({
-        nameIndex: index("name_idx").on(example.name),
-    })
+  "post",
+  {
+    id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    name: text("name", { length: 256 }),
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: int("updatedAt", { mode: "timestamp" }),
+  },
+  (example) => ({
+    nameIndex: index("name_idx").on(example.name),
+  }),
 );
 
-export const users = createTable(
-    "users",
-    {
-        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-        username: text("username", { length: 256 }).notNull().unique(),
-        password: text("password", { length: 64 }).notNull(),
-        resetPassword: text("reset_password", { length: 64 }),
-        isAdmin: int('isAdmin', { mode: 'boolean' })
-    }
-);
+export const users = createTable("users", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  username: text("username", { length: 256 }).notNull().unique(),
+  password: text("password", { length: 64 }).notNull(),
+  resetPassword: text("reset_password", { length: 64 }),
+  isAdmin: int("isAdmin", { mode: "boolean" }),
+});
 
-export const initialUsers = createTable(
-    "initialUsers",
-    {
-        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-        username: text("username", { length: 256 }).notNull().unique(),
-        initialPassword: text("initial_password", { length: 64 }).notNull()
-    }
-);
+export const initialUsers = createTable("initialUsers", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  username: text("username", { length: 256 }).notNull().unique(),
+  initialPassword: text("initial_password", { length: 64 }).notNull(),
+});
