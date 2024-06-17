@@ -17,13 +17,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": true
   },
-  "include": [
-    "**/*.ts",
-    "drizzle.config.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "drizzle.config.ts", "drizzle.development.config.ts"],
+  "exclude": ["node_modules"]
 }

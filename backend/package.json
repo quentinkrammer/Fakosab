@@ -10,10 +10,10 @@
     "format": "prettier ./src --write --config ../.prettierrc.cjs",
     "test": "vitest --mode development",
     "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:generate": "drizzle-kit generate --url drizzle.development.config.ts",
+    "db:migrate": "drizzle-kit migrate --config drizzle.development.config.ts",
+    "db:push": "drizzle-kit push --config drizzle.development.config.ts",
+    "db:studio": "drizzle-kit studio --config drizzle.development.config.ts"
   },
   "author": "Bastian Opatz",
   "license": "ISC",
@@ -38,6 +38,7 @@
     "@trpc/server": "^10.45.2",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.22.7",
     "drizzle-orm": "^0.31.2",
     "express": "^4.19.2",
