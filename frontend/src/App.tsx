@@ -7,7 +7,7 @@ function App() {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3000/login", {
+    const res = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded", },
       body: `username=${e.currentTarget.username.value}&password=${e.currentTarget.password.value}`,

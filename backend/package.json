@@ -8,7 +8,7 @@
     "dev": "vite-node --mode development --watch src/index.ts",
     "build": "vite build",
     "format": "prettier ./src --write --config ../.prettierrc.cjs",
-    "test": "vitest --mode development",
+    "test": "vitest run --mode development",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate --url drizzle.development.config.ts",
     "db:migrate": "drizzle-kit migrate --config drizzle.development.config.ts",

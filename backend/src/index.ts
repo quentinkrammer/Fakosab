@@ -13,7 +13,6 @@ const MemoryStore = memoryStore(session);
 
 const app = express();
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(express.urlencoded({ extended: false }));
 app.use(
   session({
     secret: "keyboard cat",
@@ -27,7 +26,7 @@ app.use(
   }),
 );
 app.use(passport.authenticate("session"));
-app.use("/", authRouter);
+app.use("/auth", authRouter);
 app.use(
   "/trpc",
   trpcExpress.createExpressMiddleware({
@@ -35,4 +34,19 @@ app.use(
     createContext,
   }),
 );
-app.listen(env.port);
+const server = app.listen(env.port);
+
+// This is needed for HMR.
+// This code hooks into the vite lifecycle and closes the server before HMR.
+// Without closing the server HMR fails cause the port is alredy in use.
+// https://github.com/vitest-dev/vitest/issues/2334
+//@ts-ignore
+const hot = import.meta.hot;
+if (hot) {
+  hot.on("vite:beforeFullReload", () => {
+    server.close();
+  });
+}
+hot.dispose(() => {
+  server.close();
+});

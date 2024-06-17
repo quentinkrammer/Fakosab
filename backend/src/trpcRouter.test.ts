@@ -60,7 +60,7 @@ describe("trpc", () => {
     expect(dbRes?.password).toBeNull();
   });
 
-  test.only("setPassword", async () => {
+  test("setPassword", async () => {
     const resetPassword = "12345678";
     const newPw = "abcdefghijklmnopqrstuvwxyz";
     // Arrange
@@ -90,5 +90,10 @@ describe("trpc", () => {
     expect(dbRes?.resetPassword).toBeNull();
     expect(dbRes?.password).toHaveLength(60);
     expect(dbRes?.password).not.eq(newPw);
+  });
+
+  test.only("mutate", async () => {
+    const user = await client.createUser.mutate({ name: "Jim" });
+    expect(user.name).toEqual("Jim");
   });
 });

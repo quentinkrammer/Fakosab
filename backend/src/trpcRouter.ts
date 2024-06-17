@@ -79,6 +79,14 @@ export const trpcRouter = trpc.router({
         .returning({ id: users.id, username: users.username });
       return updatedUser;
     }),
+  createUser: publicProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation((req) => {
+      const { input } = req;
+
+      console.log("in router: ", input);
+      return input;
+    }),
 });
 
 export type AppRouter = typeof trpcRouter;
