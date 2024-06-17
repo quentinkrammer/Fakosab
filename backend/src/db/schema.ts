@@ -30,7 +30,7 @@ export const posts = createTable(
 export const users = createTable("users", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   username: text("username", { length: 256 }).notNull().unique(),
-  password: text("password", { length: 64 }),
+  password: text("password", { length: 256 }),
   resetPassword: text("reset_password", { length: 64 }),
   isAdmin: int("isAdmin", { mode: "boolean" }),
 });

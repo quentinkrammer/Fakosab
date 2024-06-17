@@ -9,7 +9,10 @@ export async function resetPassword(userId: SelectUsers["id"], db: Db) {
     .update(users)
     .set({ password: null, resetPassword })
     .where(eq(users.id, userId))
-    .returning({ userId: users.id, resetCode: users.resetPassword });
+    .returning({
+      userId: users.id,
+      resetCode: users.resetPassword,
+    });
 
   return updatedUser;
 }

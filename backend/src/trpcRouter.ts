@@ -17,7 +17,7 @@ export const trpcRouter = trpc.router({
   }),
   newUser: adminProcedure
     .input(z.object({ username: z.string() }))
-    .mutation(async (opts) => {
+    .query(async (opts) => {
       const {
         input: { username },
         ctx: { db },
@@ -33,7 +33,7 @@ export const trpcRouter = trpc.router({
     }),
   resetPassword: adminProcedure
     .input(z.object({ userId: z.number() }))
-    .mutation(async (opts) => {
+    .query(async (opts) => {
       const {
         input: { userId },
         ctx: { db },
@@ -50,7 +50,7 @@ export const trpcRouter = trpc.router({
         password: z.string().min(8).max(30),
       }),
     )
-    .mutation(async (opts) => {
+    .query(async (opts) => {
       const {
         input: { resetPassword, password, username },
         ctx: { db },
@@ -69,7 +69,7 @@ export const trpcRouter = trpc.router({
           message: `Incorrect password-reset-code`,
         });
 
-      const salt = env.salt;
+      const salt = bcrypt.genSaltSync(env.salt);
       const encrypted = bcrypt.hashSync(password, salt);
 
       const updatedUser = await db

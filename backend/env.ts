@@ -12,7 +12,7 @@ const untyped = {
 export const env = z
   .object({
     databaseUrl: z.string(),
-    salt: z.string(),
+    salt: z.string().transform((value) => Number(value)),
     port: z.string().transform((value) => Number(value)),
   })
   .parse(untyped);
