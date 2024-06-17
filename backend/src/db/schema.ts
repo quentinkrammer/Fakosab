@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { InferSelectModel, sql } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, sql } from "drizzle-orm";
 import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 /**
@@ -35,3 +35,4 @@ export const users = createTable("users", {
   isAdmin: int("isAdmin", { mode: "boolean" }),
 });
 export type SelectUsers = InferSelectModel<typeof users>;
+export type InsertUsers = InferInsertModel<typeof users>;

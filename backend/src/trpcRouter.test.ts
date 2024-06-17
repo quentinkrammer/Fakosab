@@ -1,7 +1,10 @@
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import { env } from "../env.js";
+import { db } from "./db/index.js";
+import { users } from "./db/schema.js";
+import { fakeUser } from "./trpc.js";
 import { AppRouter } from "./trpcRouter.js";
 
 const client = createTRPCProxyClient<AppRouter>({
@@ -14,8 +17,13 @@ const client = createTRPCProxyClient<AppRouter>({
 });
 
 describe("trpc", () => {
-  test("send a request", async () => {
-    const res = await client.getFoo.query();
-    expect(res).toEqual("Foo");
+  beforeEach(async () => {
+    await db.delete(users);
+    await db.insert(users).values([fakeUser]);
+  });
+
+  test("getUsers", async () => {
+    const res = await client.getUsers.query();
+    expect(res).toEqual([{ ...fakeUser, resetPassword: null }]);
   });
 });

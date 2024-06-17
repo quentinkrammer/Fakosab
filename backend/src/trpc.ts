@@ -3,19 +3,23 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
 import { db } from "./db/index.js";
+import { InsertUsers } from "./db/schema.js";
 
 const userSchema = z.object({
   username: z.string(),
   isAdmin: z.boolean().or(z.null()),
   id: z.number(),
 });
+export const fakeUser: z.infer<typeof userSchema> = {
+  id: 42,
+  username: "DevEnvUser",
+  isAdmin: true,
+} satisfies InsertUsers;
+
 export const createContext = ({
   req,
 }: trpcExpress.CreateExpressContextOptions) => {
-  const user =
-    process.env["NODE_ENV"] === "development"
-      ? { username: "DevEnvUser", isAdmin: true, id: 42 }
-      : req.user;
+  const user = process.env["NODE_ENV"] === "development" ? fakeUser : req.user;
 
   const { data } = userSchema.safeParse(user);
   return {
