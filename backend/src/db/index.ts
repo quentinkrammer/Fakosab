@@ -1,8 +1,8 @@
 import { createClient, type Client } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
-import * as schema from "./schema.js";
 import { env } from "../../env.js";
+import * as schema from "./schema.js";
 
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
@@ -17,3 +17,4 @@ export const client =
 if (process.env["NODE_ENV"] !== "production") globalForDb.client = client;
 
 export const db = drizzle(client, { schema });
+export type Db = typeof db;

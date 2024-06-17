@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { InferSelectModel, sql } from "drizzle-orm";
 import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 /**
@@ -30,13 +30,8 @@ export const posts = createTable(
 export const users = createTable("users", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   username: text("username", { length: 256 }).notNull().unique(),
-  password: text("password", { length: 64 }).notNull(),
+  password: text("password", { length: 64 }),
   resetPassword: text("reset_password", { length: 64 }),
   isAdmin: int("isAdmin", { mode: "boolean" }),
 });
-
-export const initialUsers = createTable("initialUsers", {
-  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  username: text("username", { length: 256 }).notNull().unique(),
-  initialPassword: text("initial_password", { length: 64 }).notNull(),
-});
+export type SelectUsers = InferSelectModel<typeof users>;
