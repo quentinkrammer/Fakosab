@@ -15,8 +15,11 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "http://localhost:3000/trpc",
       // You can pass any HTTP headers you wish here
-      async headers() {
-        return {};
+      headers: {
+        Bar: "42",
+        Foo: "foo",
+        Cookie:
+          "connect.sid=s%3AakZJitFqokXf21yg71N0GF4chyc28SRE.u0oTIQT8Gqc%2BTKLjGpd3xai6SvGhKvbTx4c%2FLxFG954",
       },
     }),
   ],

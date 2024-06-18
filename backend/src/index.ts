@@ -12,7 +12,18 @@ import { trpcRouter } from "./trpcRouter.js";
 const MemoryStore = memoryStore(session);
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+app.options(
+  "*",
+  cors({
+    allowedHeaders: ["Foo", "Bar", "Cookie"],
+  }),
+);
 app.use(
   session({
     secret: "keyboard cat",

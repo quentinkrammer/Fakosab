@@ -87,6 +87,9 @@ export const trpcRouter = trpc.router({
       console.log("in router - input: ", input);
       return input;
     }),
+  getFoo: publicProcedure.query(() => {
+    return "Foo";
+  }),
 });
 
 export type AppRouter = typeof trpcRouter;

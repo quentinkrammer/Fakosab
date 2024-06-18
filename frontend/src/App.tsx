@@ -1,27 +1,11 @@
-import { QueryClient } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
 import { FormEvent, useState } from "react";
-import superjson from "superjson";
 import "./App.css";
 import { trpc } from "./trpc";
-
-const queryClient = new QueryClient();
-const trpcClient = trpc.createClient({
-  transformer: superjson,
-  links: [
-    httpBatchLink({
-      url: "http://localhost:3000/trpc",
-      // You can pass any HTTP headers you wish here
-      async headers() {
-        return {};
-      },
-    }),
-  ],
-});
 
 function App() {
   const [res, setRes] = useState("");
   const createUserMutation = trpc.createUser.useMutation();
+  const fooQuery = trpc.getFoo.useQuery();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,8 +37,9 @@ function App() {
       </form>
       <h1>Response: {res}</h1>
       <button onClick={() => createUserMutation.mutate({ name: "Bill" })}>
-        fetch
+        mutation
       </button>
+      <button onClick={() => console.log(fooQuery.data)}>query</button>
     </>
   );
 }

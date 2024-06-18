@@ -19,7 +19,7 @@ export const fakeUser: z.infer<typeof userSchema> = {
 export const createContext = ({
   req,
 }: trpcExpress.CreateExpressContextOptions) => {
-  const user = process.env["NODE_ENV"] === "development" ? fakeUser : req.user;
+  const user = req.user;
 
   const { data } = userSchema.safeParse(user);
   return {

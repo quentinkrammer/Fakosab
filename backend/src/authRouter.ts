@@ -23,6 +23,10 @@ passport.use(
         return cb(null, false, {
           message: `The username ${username} does not exist.`,
         });
+      if (!user.password)
+        return cb(null, false, {
+          message: `No password was provided.`,
+        });
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return cb(null, false, { message: "Incorrect password." });
