@@ -1,5 +1,5 @@
 {
-  "name": "fakosab",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Generiere Fahrtkosten Abrechnungen",
   "main": "src/index.ts",

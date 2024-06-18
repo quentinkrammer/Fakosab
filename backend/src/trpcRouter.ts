@@ -82,9 +82,9 @@ export const trpcRouter = trpc.router({
   createUser: publicProcedure
     .input(z.object({ name: z.string() }))
     .mutation((req) => {
-      const { input } = req;
-
-      console.log("in router: ", input);
+      const { input, ctx } = req;
+      console.log("in router - user: ", ctx.user);
+      console.log("in router - input: ", input);
       return input;
     }),
 });
