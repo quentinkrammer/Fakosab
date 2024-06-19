@@ -18,12 +18,6 @@ app.use(
     credentials: true,
   }),
 );
-app.options(
-  "*",
-  cors({
-    allowedHeaders: ["Foo", "Bar", "Cookie"],
-  }),
-);
 app.use(
   session({
     secret: "keyboard cat",

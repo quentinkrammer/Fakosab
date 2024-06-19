@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { randomString } from "../utils/randomString.js";
-import { Db } from "./index.js";
+import { Db } from "./drizzle.js";
 import { SelectUsers, users } from "./schema.js";
 
 export async function resetPassword(userId: SelectUsers["id"], db: Db) {

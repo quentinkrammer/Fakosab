@@ -2,7 +2,7 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
-import { db } from "./db/index.js";
+import { db } from "./db/drizzle.js";
 import { InsertUsers } from "./db/schema.js";
 
 const userSchema = z.object({

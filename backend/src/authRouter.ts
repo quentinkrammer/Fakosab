@@ -2,21 +2,15 @@ import bcrypt from "bcrypt";
 import express from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { db } from "./db/index.js";
+import { db } from "./db/drizzle.js";
 import { omit } from "./utils/omit.js";
 
-type S = passport.Strategy;
 passport.use(
   new LocalStrategy(
     { usernameField: "username", passwordField: "password", session: true },
     async function verify(username, password, cb) {
-      console.log("username", username);
-      console.log("password", password);
-      if (username === "Jim") {
-        return cb(null, { user: "Jim" });
-      }
       const user = await db.query.users.findFirst({
-        columns: { password: true, isAdmin: true, id: true },
+        columns: { password: true, isAdmin: true, id: true, username: true },
         where: (users, { eq }) => eq(users.username, username),
       });
       if (!user)

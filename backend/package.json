@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate --url drizzle.development.config.ts",
     "db:migrate": "drizzle-kit migrate --config drizzle.development.config.ts",
     "db:push": "drizzle-kit push --config drizzle.development.config.ts",
-    "db:studio": "drizzle-kit studio --config drizzle.development.config.ts"
+    "db:studio": "drizzle-kit studio --config drizzle.development.config.ts",
+    "db:seed": "vite-node src/db/seed.ts"
   },
   "author": "Bastian Opatz",
   "license": "ISC",
