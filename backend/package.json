@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "vite-node --mode development --watch src/index.ts",
+    "start:dev": "vite-node --mode development --watch src/index.ts",
+    "start:test": "vite-node --mode testing src/index.ts",
     "build": "vite build",
     "format": "prettier ./src --write --config ../.prettierrc.cjs",
     "test": "vitest run --mode development",

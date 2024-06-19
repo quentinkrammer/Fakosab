@@ -2,24 +2,23 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
+import { env } from "../env.js";
 import { db } from "./db/drizzle.js";
-import { InsertUsers } from "./db/schema.js";
+import { mockAdmin } from "./db/seedHelper.js";
 
 const userSchema = z.object({
   username: z.string(),
   isAdmin: z.boolean().or(z.null()),
   id: z.number(),
 });
-export const fakeUser: z.infer<typeof userSchema> = {
-  id: 42,
-  username: "DevEnvUser",
-  isAdmin: true,
-} satisfies InsertUsers;
+// The actual id will be an auto incremented integer.
+// The id right here is  needed to pass the userSchema zod parser
+const testingUser: z.infer<typeof userSchema> = { ...mockAdmin, id: 99999 };
 
 export const createContext = ({
   req,
 }: trpcExpress.CreateExpressContextOptions) => {
-  const user = req.user;
+  const user = env.mode === "testing" ? testingUser : req.user;
 
   const { data } = userSchema.safeParse(user);
   return {

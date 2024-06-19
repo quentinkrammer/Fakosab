@@ -5,12 +5,7 @@ import { z } from "zod";
 import { env } from "../env.js";
 import { users } from "./db/schema.js";
 import { resetPassword } from "./db/user.service.js";
-import {
-  adminProcedure,
-  authedProcedure,
-  publicProcedure,
-  trpc,
-} from "./trpc.js";
+import { adminProcedure, publicProcedure, trpc } from "./trpc.js";
 
 export const trpcRouter = trpc.router({
   getUsers: adminProcedure.query(async (opts) => {
@@ -84,17 +79,6 @@ export const trpcRouter = trpc.router({
         .returning({ id: users.id, username: users.username });
       return updatedUser;
     }),
-  createUser: authedProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation((req) => {
-      const { input, ctx } = req;
-      console.log("in router - user: ", ctx.user);
-      console.log("in router - input: ", input);
-      return input;
-    }),
-  getFoo: authedProcedure.query(() => {
-    return "Foo";
-  }),
 });
 
 export type AppRouter = typeof trpcRouter;

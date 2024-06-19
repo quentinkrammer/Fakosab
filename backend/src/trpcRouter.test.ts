@@ -5,8 +5,9 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { env } from "../env.js";
 import { db } from "./db/drizzle.js";
 import { users } from "./db/schema.js";
-import { fakeUser } from "./trpc.js";
+import { seedWithAdmin } from "./db/seedHelper.js";
 import { AppRouter } from "./trpcRouter.js";
+import { omit } from "./utils/omit.js";
 
 const client = createTRPCProxyClient<AppRouter>({
   transformer: superjson,
@@ -17,21 +18,24 @@ const client = createTRPCProxyClient<AppRouter>({
   ],
 });
 
-const newUser = "Jim";
+const newUserName = "JimBo";
 
 describe("trpc", () => {
+  let mockAdmin: Awaited<ReturnType<typeof seedWithAdmin>>;
+
   beforeEach(async () => {
-    await db.delete(users);
-    await db.insert(users).values([fakeUser]);
+    mockAdmin = await seedWithAdmin();
   });
 
   test("getUsers", async () => {
     const res = await client.getUsers.query();
-    expect(res).toEqual([{ ...fakeUser, resetPassword: null }]);
+    expect(res).toEqual([
+      { ...omit(mockAdmin, "password"), resetPassword: null },
+    ]);
   });
 
   test("newUser", async () => {
-    const res = await client.newUser.query({ username: newUser });
+    const res = await client.newUser.query({ username: newUserName });
     expect(res.resetCode).toBeTypeOf("string");
     expect(res.resetCode).toHaveLength(8);
     expect(res.userId).toBeTypeOf("number");
@@ -42,7 +46,7 @@ describe("trpc", () => {
     const { userId } = (
       await db
         .insert(users)
-        .values({ username: newUser, password: "foo" })
+        .values({ username: newUserName, password: "foo" })
         .returning({ userId: users.id })
     )[0]!;
 
@@ -64,17 +68,17 @@ describe("trpc", () => {
     const resetPassword = "12345678";
     const newPw = "abcdefghijklmnopqrstuvwxyz";
     // Arrange
-    const { userId } = (
+    const { userId: newUserId } = (
       await db
         .insert(users)
-        .values({ username: newUser, resetPassword })
+        .values({ username: newUserName, resetPassword })
         .returning({ userId: users.id })
     )[0]!;
 
     // Act
     const res = (
       await client.setPassword.query({
-        username: newUser,
+        username: newUserName,
         password: newPw,
         resetPassword,
       })
@@ -86,14 +90,10 @@ describe("trpc", () => {
     });
 
     // Assert//
-    expect(res.username).toEqual(newUser);
+    expect(res.username).toEqual(newUserName);
+    expect(res.id).toEqual(newUserId);
     expect(dbRes?.resetPassword).toBeNull();
     expect(dbRes?.password).toHaveLength(60);
     expect(dbRes?.password).not.eq(newPw);
-  });
-
-  test.only("mutate", async () => {
-    const user = await client.createUser.mutate({ name: "Jim" });
-    expect(user.name).toEqual("Jim");
   });
 });
