@@ -1,6 +1,6 @@
 export const PAGES = {
-  home: "Home",
-  history: "History",
-  users: "Users",
-  export: "Export",
-};
+  home: "home",
+  history: "history",
+  users: "users",
+  export: "export",
+} as const;

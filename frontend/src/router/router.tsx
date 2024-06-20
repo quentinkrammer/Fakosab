@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
 import { PAGES } from "../constants";
 import { ExportPage } from "./ExportPage";
 import { HistoryPage } from "./HistoryPage";
@@ -8,8 +9,9 @@ import { UsersPage } from "./UsersPage";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <App />,
     children: [
+      { path: PAGES.home, element: <HomePage /> },
       { path: PAGES.history, element: <HistoryPage /> },
       { path: PAGES.users, element: <UsersPage /> },
       { path: PAGES.export, element: <ExportPage /> },
