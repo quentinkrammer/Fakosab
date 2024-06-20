@@ -36,17 +36,20 @@ function LoginForm() {
       <InputText
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
       />
       <Password
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
         toggleMask
+        panelStyle={{ display: "none" }}
       />
       <Button onClick={onSubmit}>Login</Button>
     </>
   );
 }
 function BookingForm() {
-  const { data } = useQueryMyUserData();
-  return `Booking: ${JSON.stringify(data)}`;
+  // const { data } = useQueryMyUserData();
+  return `Home`;
 }

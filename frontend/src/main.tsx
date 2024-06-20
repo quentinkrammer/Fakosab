@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-dark-cyan/theme.css";
+import "primeicons/primeicons.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";

@@ -4,3 +4,4 @@ export const PAGES = {
   users: "users",
   export: "export",
 } as const;
+export type Pages = (typeof PAGES)[keyof typeof PAGES];
