@@ -22,9 +22,9 @@ app.use(
   session({
     secret: "keyboard cat",
     resave: false,
-    cookie: { maxAge: 3600000 },
+    cookie: { maxAge: 1800000 },
     store: new MemoryStore({
-      checkPeriod: 3600000,
+      checkPeriod: 1800000,
     }),
     // not sure if this is needed
     saveUninitialized: false,

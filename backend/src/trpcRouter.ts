@@ -5,9 +5,18 @@ import { z } from "zod";
 import { env } from "../env.js";
 import { users } from "./db/schema.js";
 import { resetPassword } from "./db/user.service.js";
-import { adminProcedure, publicProcedure, trpc } from "./trpc.js";
+import {
+  adminProcedure,
+  authedProcedure,
+  publicProcedure,
+  trpc,
+} from "./trpc.js";
 
 export const trpcRouter = trpc.router({
+  getMyUserData: authedProcedure.query((opts) => {
+    const user = opts.ctx.user;
+    return user;
+  }),
   getUsers: adminProcedure.query(async (opts) => {
     const db = opts.ctx.db;
     const users = await db.query.users.findMany({
