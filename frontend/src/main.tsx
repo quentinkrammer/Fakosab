@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
+import "primeicons/primeicons.css";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-dark-cyan/theme.css";
-import "primeicons/primeicons.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import superjson from "superjson";
+import "./main.css";
 import { router } from "./router/router.tsx";
 import { trpc } from "./trpc";
 

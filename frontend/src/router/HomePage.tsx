@@ -1,13 +1,12 @@
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
-import { Password } from "primereact/password";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useCallback, useState } from "react";
+import { LabeledInput } from "../components/LabeledInput";
+import { Password } from "../components/Password";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { useSetPasswordMutation } from "../hooks/useSetPasswordMutation";
 import { trpc } from "../trpc";
-import { LabeledInput } from "./LabeledInput";
 
 export function HomePage() {
   const { isLoading, isError } = useQueryMyUserData();
@@ -31,6 +30,7 @@ function LoginTabs() {
     </>
   );
 }
+
 function LoginForm() {
   const utils = trpc.useUtils();
   const [password, setPassword] = useState("");
@@ -56,12 +56,11 @@ function LoginForm() {
         onChange={(e) => setUsername(e.target.value)}
         label="Username"
       />
-      <LabeledInput
+      <Password
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         label="Password"
       />
-
       <Button onClick={onSubmit} style={{ alignSelf: "flex-end" }}>
         Login
       </Button>
@@ -85,29 +84,25 @@ function NewPasswordForm() {
         gap: "1rem",
       }}
     >
-      <InputText
+      <LabeledInput
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
+        label="Username"
       />
-      <InputText
+      <LabeledInput
         value={resetCode}
         onChange={(e) => setResetCode(e.target.value)}
-        placeholder="Reset Code"
+        label="Reset Code"
       />
       <Password
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="New Password"
-        toggleMask
-        panelStyle={{ display: "none" }}
+        label="New Password"
       />
       <Password
         value={repeatPassword}
         onChange={(e) => setRepeatPassword(e.target.value)}
-        placeholder="Repeat Password"
-        toggleMask
-        panelStyle={{ display: "none" }}
+        label="Repeat Password"
       />
       <Button
         onClick={() =>
