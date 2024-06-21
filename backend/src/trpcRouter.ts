@@ -59,7 +59,7 @@ export const trpcRouter = trpc.router({
         password: z.string().min(8).max(30),
       }),
     )
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const {
         input: { resetPassword, password, username },
         ctx: { db },

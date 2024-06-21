@@ -27,6 +27,7 @@ function App() {
           overflow: "auto",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
           paddingTop: "1rem",
         }}
       >
