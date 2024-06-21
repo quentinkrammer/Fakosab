@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { trpc } from "../trpc";
 
@@ -18,7 +18,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
 
-  async function onSubmit() {
+  const onSubmit = useCallback(async () => {
     const res = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -29,7 +29,7 @@ function LoginForm() {
       // All queries on all routers will be invalidated 🔥
       utils.invalidate();
     }
-  }
+  }, [password, username, utils]);
 
   return (
     <>
