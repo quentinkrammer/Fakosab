@@ -20,7 +20,7 @@ export const trpcRouter = trpc.router({
   getUsers: adminProcedure.query(async (opts) => {
     const db = opts.ctx.db;
     const users = await db.query.users.findMany({
-      columns: { id: true, resetPassword: true, username: true, isAdmin: true },
+      columns: { id: true, resetPassword: true, username: true },
     });
     return users;
   }),

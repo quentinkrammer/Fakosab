@@ -9,17 +9,34 @@ import { PAGES, Pages } from "../constants";
 import { useActiveRoute } from "../hooks/useActiveRoute";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 
-const LINK_CONFIG: Array<{ route: Pages; label: string; icon: string }> = [
+const LINK_CONFIG: Array<{
+  route: Pages;
+  label: string;
+  icon: string;
+  isAdminOnly?: boolean;
+}> = [
   { label: "Home", icon: "pi pi-home", route: PAGES.home },
   { label: "History", icon: "pi pi-clock", route: PAGES.history },
-  { label: "Users", icon: "pi pi-users", route: PAGES.users },
-  { label: "Excel Export", icon: "pi pi-file-excel", route: PAGES.export },
+  {
+    label: "Users",
+    icon: "pi pi-users",
+    route: PAGES.users,
+    isAdminOnly: true,
+  },
+  {
+    label: "Excel Export",
+    icon: "pi pi-file-excel",
+    route: PAGES.export,
+    isAdminOnly: true,
+  },
 ];
 
 export function NavBar() {
   const [visible, setVisible] = useState(false);
   const activeRoute = useActiveRoute();
-  const username = useQueryMyUserData().data?.username;
+  const userData = useQueryMyUserData();
+  const username = userData.data?.username;
+  const isAdmin = userData.data?.isAdmin;
 
   return (
     <>
@@ -43,24 +60,27 @@ export function NavBar() {
         onHide={() => setVisible(false)}
         showCloseIcon={false}
       >
-        {LINK_CONFIG.map(({ icon, label, route }) => (
-          <Link
-            to={PAGES[route]}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <span
-              onClick={() => setVisible(false)}
-              className={classNames(styles.link, {
-                [styles.activeLink]: activeRoute === route,
-              })}
+        {LINK_CONFIG.map(({ icon, label, route, isAdminOnly }) => {
+          if (isAdminOnly && !isAdmin) return;
+          return (
+            <Link
+              to={PAGES[route]}
+              style={{
+                textDecoration: "none",
+              }}
             >
-              <i className={icon} style={{ fontSize: "1.5rem" }}></i>
-              <h4 style={{ padding: "0" }}>{label}</h4>
-            </span>
-          </Link>
-        ))}
+              <span
+                onClick={() => setVisible(false)}
+                className={classNames(styles.link, {
+                  [styles.activeLink]: activeRoute === route,
+                })}
+              >
+                <i className={icon} style={{ fontSize: "1.5rem" }}></i>
+                <h4 style={{ padding: "0" }}>{label}</h4>
+              </span>
+            </Link>
+          );
+        })}
       </Sidebar>
     </>
   );
