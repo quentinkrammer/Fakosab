@@ -1,12 +1,23 @@
+import { useToastMessage } from "../context/toastContext";
+import { label } from "../label";
 import { trpc } from "../trpc";
 
 export function useSetPasswordMutation() {
+  const toastMessage = useToastMessage();
+
   return trpc.setPassword.useMutation({
     onSuccess() {
-      alert("Success");
+      toastMessage({
+        severity: "success",
+        detail: label.passwordResetSuccessfull,
+      });
     },
-    onError() {
-      alert("Error");
+    onError(e) {
+      console.error(e);
+      toastMessage({
+        severity: "error",
+        detail: e.data?.code,
+      });
     },
   });
 }

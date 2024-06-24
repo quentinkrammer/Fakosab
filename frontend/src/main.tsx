@@ -7,6 +7,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import superjson from "superjson";
+import { ToastProvider } from "./context/ToastProvider.tsx";
 import "./main.css";
 import { router } from "./router/router.tsx";
 import { trpc } from "./trpc";
@@ -32,7 +33,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <PrimeReactProvider>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
         </QueryClientProvider>
       </trpc.Provider>
     </PrimeReactProvider>

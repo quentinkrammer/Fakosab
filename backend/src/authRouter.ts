@@ -56,7 +56,8 @@ router.get("/authed", function (_, res) {
   res.json("Login successfull");
 });
 router.get("/notAuthed", function (_, res) {
-  res.json("Login failed");
+  res.statusMessage = "Invalid username or password";
+  return res.status(401).end();
 });
 
 export const authRouter = router;
