@@ -26,7 +26,7 @@ export const trpcRouter = trpc.router({
   }),
   newUser: adminProcedure
     .input(z.object({ username: z.string() }))
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const {
         input: { username },
         ctx: { db },
