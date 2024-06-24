@@ -42,7 +42,7 @@ export const trpcRouter = trpc.router({
     }),
   resetPassword: adminProcedure
     .input(z.object({ userId: z.number() }))
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const {
         input: { userId },
         ctx: { db },

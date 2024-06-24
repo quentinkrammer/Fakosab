@@ -1,17 +1,30 @@
+import { css } from "goober";
 import { Button, ButtonProps } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog, DialogProps } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { MenuItem } from "primereact/menuitem";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { ChangeEvent, memo, useCallback, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { LabeledInput } from "../components/LabeledInput";
 import { useNewUserMutation } from "../hooks/useNewUserMutation";
 import { useQueryGetUsers } from "../hooks/useQueryGetUsers";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
-import { UnknownObject } from "../types";
+import { useResetPasswordMutation } from "../hooks/useResetPasswordMutation";
+import { RouterOutput, UnknownObject } from "../types";
 
 type DataValue<U extends Array<UnknownObject> | undefined> =
   keyof NonNullable<U>[number];
+
+type UserValue = DataValue<RouterOutput["getUsers"]>;
 
 export function UsersPage() {
   const { isLoading, data: allUsers } = useQueryGetUsers();
@@ -26,7 +39,6 @@ export function UsersPage() {
 
   if (isLoading) return <ProgressSpinner />;
 
-  type UserValue = DataValue<typeof users>;
   return (
     <>
       <DataTable
@@ -43,12 +55,76 @@ export function UsersPage() {
           header="PW-Reset Code"
           sortable
         />
-        <Column header="Actions" body={() => 42} />
+        <Column
+          header="Actions"
+          body={(d) => (
+            <UserContextMenu id={(d as RouterOutput["getUsers"][number]).id} />
+          )}
+        />
       </DataTable>
       <AddUserDialog visible={showAddUserDialog} onHide={onHide} />
     </>
   );
 }
+type UserContextMenuProps = Pick<RouterOutput["getUsers"][number], "id">;
+const UserContextMenu = memo(function UserContextMenu({
+  id,
+}: UserContextMenuProps) {
+  const menuRef = useRef<Menu>(null!);
+  const resetPwMutation = useResetPasswordMutation();
+
+  const itemRenderer = (item: MenuItem) => {
+    return (
+      <Button
+        icon={item.icon}
+        label={item.label}
+        onClick={item.data["onClick"]}
+        text
+        className={styles.menuButton}
+      />
+    );
+  };
+
+  const items: MenuItem[] = [
+    {
+      label: "Options",
+      items: [
+        {
+          label: "Reset password",
+          icon: "pi pi-refresh",
+          template: itemRenderer,
+          data: {
+            onClick: (
+              e: Parameters<NonNullable<ButtonProps["onClick"]>>[0],
+            ) => {
+              resetPwMutation.mutate({ userId: id });
+              menuRef.current.toggle(e);
+            },
+          },
+        },
+        {
+          label: "Delete",
+          icon: "pi pi-trash",
+          template: itemRenderer,
+          data: { onClick: () => console.log("delete") },
+        },
+      ],
+    },
+  ];
+
+  return (
+    <>
+      <Button
+        icon="pi pi-ellipsis-h"
+        onClick={(e) => menuRef.current.toggle(e)}
+        aria-haspopup
+        rounded
+        text
+      />
+      <Menu model={items} popup ref={menuRef} />
+    </>
+  );
+});
 
 type AddUserDialogProps = Pick<DialogProps, "onHide" | "visible">;
 const AddUserDialog = memo(function AddUserDialog({
@@ -103,3 +179,5 @@ function UserTableHeader({ onClick }: UserTableHeaderProps) {
     </div>
   );
 }
+
+const styles = { menuButton: css({ width: "100%" }) };
