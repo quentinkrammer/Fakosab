@@ -1,4 +1,5 @@
 import { css } from "goober";
+import { isNil } from "lodash";
 import { Button, ButtonProps } from "primereact/button";
 import { Column } from "primereact/column";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
@@ -9,9 +10,11 @@ import { MenuItem } from "primereact/menuitem";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { ChangeEvent, memo, useCallback, useRef, useState } from "react";
 import { LabeledInput } from "../components/LabeledInput";
+import { STRING_NOT_FOUND } from "../constants";
 import { useDeleteProjectMutation } from "../hooks/useDeleteProjectMutation";
 import { useNewProjectMutation } from "../hooks/useNewProjectMutation";
 import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
+import { useRenameProjectMutation } from "../hooks/useRenameProjectMutation";
 import { useSetProjectDisabledMutation } from "../hooks/useSetProjectDisabledMutation";
 import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
 
@@ -19,12 +22,24 @@ type DataValue<U extends Array<UnknownObject> | undefined> =
   keyof NonNullable<U>[number];
 
 type ProjectsValue = DataValue<RouterOutput["projects"]["getProjects"]>;
+type Project = RouterOutput["projects"]["getProjects"][number];
+type ProjectShort = Pick<Project, "id" | "name">;
 
 export function ProjectsPage() {
   const { isLoading, data: projects } = useQueryGetProjects();
   const [showAddProjectDialog, setShowAddProjectDialog] = useState(false);
+  const [showRenameProjectDialog, setShowRenameProjectDialog] =
+    useState<ProjectShort>();
 
-  const onHide = useCallback(() => setShowAddProjectDialog(false), []);
+  const onHideAddDialog = useCallback(() => setShowAddProjectDialog(false), []);
+  const onHideRenameDialog = useCallback(
+    () => setShowRenameProjectDialog(undefined),
+    [],
+  );
+  const onOpenRenameDialog = useCallback(
+    (project: ProjectShort) => setShowRenameProjectDialog(project),
+    [],
+  );
   const onAdd = useCallback(() => setShowAddProjectDialog(true), []);
 
   if (isLoading) return <ProgressSpinner />;
@@ -35,6 +50,7 @@ export function ProjectsPage() {
         <Column field={"name" satisfies ProjectsValue} header="Name" sortable />
         <Column
           header="Is Active"
+          field={"disabled" satisfies ProjectsValue}
           sortable
           body={(props) =>
             !(props as RouterOutput["projects"]["getProjects"][number]).disabled
@@ -43,20 +59,29 @@ export function ProjectsPage() {
         <Column
           body={(props) => (
             <ProjectContextMenu
-              {...(props as RouterOutput["projects"]["getProjects"][number])}
+              {...(props as Project)}
+              onOpenRenameForm={onOpenRenameDialog}
             />
           )}
         />
       </DataTable>
-      <AddProjectDialog visible={showAddProjectDialog} onHide={onHide} />
+      <AddDialog visible={showAddProjectDialog} onHide={onHideAddDialog} />
+      <RenameDialog
+        onHide={onHideRenameDialog}
+        id={showRenameProjectDialog?.id}
+        name={showRenameProjectDialog?.name}
+      />
     </>
   );
 }
-type ProjectContextMenuProps = RouterOutput["projects"]["getProjects"][number];
+type ProjectContextMenuProps = Project & {
+  onOpenRenameForm: (project: { id: number; name: string }) => void;
+};
 const ProjectContextMenu = memo(function ProjectContextMenu({
   id,
-  disabled,
   name,
+  disabled,
+  onOpenRenameForm,
 }: ProjectContextMenuProps) {
   const menuRef = useRef<Menu>(null!);
   const disabledMutation = useSetProjectDisabledMutation();
@@ -83,9 +108,15 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
           icon: disabled ? "pi pi-check-circle" : "pi pi-ban",
           template: itemRenderer,
           data: {
-            onClick: (e: ButtonEvent) => {
-              onToggleAvailability(e);
-            },
+            onClick: (e: ButtonEvent) => onToggleAvailability(e),
+          },
+        },
+        {
+          label: "Rename",
+          icon: "pi pi-file-edit",
+          template: itemRenderer,
+          data: {
+            onClick: () => onOpenRenameForm({ id, name }),
           },
         },
         {
@@ -135,11 +166,8 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
   );
 });
 
-type AddUserDialogProps = Pick<DialogProps, "onHide" | "visible">;
-const AddProjectDialog = memo(function AddUserDialog({
-  onHide,
-  visible,
-}: AddUserDialogProps) {
+type AddDialogProps = Pick<DialogProps, "onHide" | "visible">;
+const AddDialog = memo(function AddDialog({ onHide, visible }: AddDialogProps) {
   const [newProject, setNewProject] = useState("");
 
   const onSuccess = useCallback(() => {
@@ -171,6 +199,56 @@ const AddProjectDialog = memo(function AddUserDialog({
         style={{ alignSelf: "end" }}
         onClick={onSubmit}
         disabled={!newProject}
+      >
+        Submit
+      </Button>
+    </Dialog>
+  );
+});
+
+type RenameDialogProps = Pick<DialogProps, "onHide"> & {
+  id: number | undefined;
+  name: string | undefined;
+};
+
+const RenameDialog = memo(function AddDialog({
+  onHide,
+  id,
+  name,
+}: RenameDialogProps) {
+  const [newName, setNewName] = useState(name);
+
+  const onSuccess = useCallback(() => onHide(), [onHide]);
+
+  const renameMutation = useRenameProjectMutation({
+    name: name ?? STRING_NOT_FOUND,
+    onSuccess,
+  });
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setNewName(e.target.value);
+
+  const onSubmit = () => {
+    if (!newName || isNil(id)) return;
+    renameMutation.mutate({ id, name: newName });
+  };
+
+  return (
+    <Dialog
+      visible={!!name}
+      onHide={onHide}
+      header={`Rename project "${name}"`}
+      contentStyle={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+    >
+      <LabeledInput
+        value={newName}
+        onChange={onChange}
+        label="New project name"
+      />
+      <Button
+        style={{ alignSelf: "end" }}
+        onClick={onSubmit}
+        disabled={!newName || newName === name}
       >
         Submit
       </Button>

@@ -236,7 +236,7 @@ function UserTableHeader({
   onAddUser,
 }: UserTableHeaderProps) {
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", gap: "1rem" }}>
       <InputText
         placeholder="Search username"
         value={filterValue}
