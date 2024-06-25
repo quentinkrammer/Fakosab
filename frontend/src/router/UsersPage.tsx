@@ -1,6 +1,7 @@
 import { css } from "goober";
 import { Button, ButtonProps } from "primereact/button";
 import { Column } from "primereact/column";
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataTable } from "primereact/datatable";
 import { Dialog, DialogProps } from "primereact/dialog";
 import { Menu } from "primereact/menu";
@@ -20,7 +21,7 @@ import { useNewUserMutation } from "../hooks/useNewUserMutation";
 import { useQueryGetUsers } from "../hooks/useQueryGetUsers";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { useResetPasswordMutation } from "../hooks/useResetPasswordMutation";
-import { RouterOutput, UnknownObject } from "../types";
+import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
 
 type DataValue<U extends Array<UnknownObject> | undefined> =
   keyof NonNullable<U>[number];
@@ -96,11 +97,14 @@ const UserContextMenu = memo(function UserContextMenu({
           icon: "pi pi-refresh",
           template: itemRenderer,
           data: {
-            onClick: (
-              e: Parameters<NonNullable<ButtonProps["onClick"]>>[0],
-            ) => {
-              resetPwMutation.mutate({ userId: id });
-              menuRef.current.toggle(e);
+            onClick: (e: ButtonEvent) => {
+              confirmPopup({
+                target: e.currentTarget,
+                message: "Do you want to reset this users password?",
+                icon: "pi pi-exclamation-triangle",
+                defaultFocus: "reject",
+                accept: () => onConfirmPwReset(e),
+              });
             },
           },
         },
@@ -109,17 +113,32 @@ const UserContextMenu = memo(function UserContextMenu({
           icon: "pi pi-trash",
           template: itemRenderer,
           data: {
-            onClick: (
-              e: Parameters<NonNullable<ButtonProps["onClick"]>>[0],
-            ) => {
-              deleteUserMutation.mutate({ userId: id });
-              menuRef.current.toggle(e);
+            onClick: (e: ButtonEvent) => {
+              confirmPopup({
+                target: e.currentTarget,
+                message: "Do you want to permanently delete this user?",
+                icon: "pi pi-exclamation-triangle",
+                defaultFocus: "reject",
+                acceptClassName: "p-button-danger",
+                acceptLabel: "Delete now",
+                accept: () => onConfirmDelete(e),
+              });
             },
           },
         },
       ],
     },
   ];
+
+  const onConfirmDelete = (e: ButtonEvent) => {
+    deleteUserMutation.mutate({ userId: id });
+    menuRef.current.toggle(e);
+  };
+
+  const onConfirmPwReset = (e: ButtonEvent) => {
+    resetPwMutation.mutate({ userId: id });
+    menuRef.current.toggle(e);
+  };
 
   return (
     <>
@@ -131,6 +150,7 @@ const UserContextMenu = memo(function UserContextMenu({
         text
       />
       <Menu model={items} popup ref={menuRef} />
+      <ConfirmPopup />
     </>
   );
 });
