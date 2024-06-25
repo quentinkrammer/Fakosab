@@ -15,7 +15,7 @@ export function useToastMessage() {
     toastRef.current.show({
       detail,
       severity: "info",
-      life: 5000,
+      life: 3500,
       closable: true,
       ...other,
     });

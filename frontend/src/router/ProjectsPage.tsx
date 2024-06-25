@@ -9,10 +9,10 @@ import { MenuItem } from "primereact/menuitem";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { ChangeEvent, memo, useCallback, useRef, useState } from "react";
 import { LabeledInput } from "../components/LabeledInput";
-import { useDeleteUserMutation } from "../hooks/useDeleteUserMutation";
+import { useDeleteProjectMutation } from "../hooks/useDeleteProjectMutation";
 import { useNewProjectMutation } from "../hooks/useNewProjectMutation";
 import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
-import { useResetPasswordMutation } from "../hooks/useResetPasswordMutation";
+import { useSetProjectDisabledMutation } from "../hooks/useSetProjectDisabledMutation";
 import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
 
 type DataValue<U extends Array<UnknownObject> | undefined> =
@@ -34,9 +34,11 @@ export function ProjectsPage() {
       <DataTable value={projects} header={<TableHeader onAddUser={onAdd} />}>
         <Column field={"name" satisfies ProjectsValue} header="Name" sortable />
         <Column
-          field={"disabled" satisfies ProjectsValue}
-          header="disabled"
+          header="Is Active"
           sortable
+          body={(props) =>
+            !(props as RouterOutput["projects"]["getProjects"][number]).disabled
+          }
         />
         <Column
           body={(props) => (
@@ -57,8 +59,8 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
   name,
 }: ProjectContextMenuProps) {
   const menuRef = useRef<Menu>(null!);
-  const resetPwMutation = useResetPasswordMutation();
-  const deleteUserMutation = useDeleteUserMutation();
+  const disabledMutation = useSetProjectDisabledMutation();
+  const deleteMutation = useDeleteProjectMutation();
 
   const itemRenderer = (item: MenuItem) => {
     return (
@@ -77,18 +79,12 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
       label: "Options",
       items: [
         {
-          label: "Reset password",
-          icon: "pi pi-refresh",
+          label: disabled ? "Enable" : "Disable",
+          icon: disabled ? "pi pi-check-circle" : "pi pi-ban",
           template: itemRenderer,
           data: {
             onClick: (e: ButtonEvent) => {
-              confirmPopup({
-                target: e.currentTarget,
-                message: "Do you want to reset this users password?",
-                icon: "pi pi-exclamation-triangle",
-                defaultFocus: "reject",
-                accept: () => onConfirmPwReset(e),
-              });
+              onToggleAvailability(e);
             },
           },
         },
@@ -100,7 +96,7 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
             onClick: (e: ButtonEvent) => {
               confirmPopup({
                 target: e.currentTarget,
-                message: "Do you want to permanently delete this user?",
+                message: `Do you want to permanently delete the project "${name}"?`,
                 icon: "pi pi-exclamation-triangle",
                 defaultFocus: "reject",
                 acceptClassName: "p-button-danger",
@@ -115,12 +111,12 @@ const ProjectContextMenu = memo(function ProjectContextMenu({
   ];
 
   const onConfirmDelete = (e: ButtonEvent) => {
-    deleteUserMutation.mutate({ userId: id });
+    deleteMutation.mutate({ id });
     menuRef.current.toggle(e);
   };
 
-  const onConfirmPwReset = (e: ButtonEvent) => {
-    resetPwMutation.mutate({ userId: id });
+  const onToggleAvailability = (e: ButtonEvent) => {
+    disabledMutation.mutate({ id, disabled: !disabled });
     menuRef.current.toggle(e);
   };
 
