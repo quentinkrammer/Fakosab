@@ -40,6 +40,21 @@ export const trpcRouter = trpc.router({
       const withInitialPassword = await resetPassword(newUser.userId, db);
       return withInitialPassword[0]!;
     }),
+  deleteUser: adminProcedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async (opts) => {
+      const {
+        input: { userId },
+        ctx: { db },
+      } = opts;
+
+      const deletedUsers = await db
+        .delete(users)
+        .where(eq(users.id, userId))
+        .returning();
+      const deletedUser = deletedUsers[0]!;
+      return deletedUser;
+    }),
   resetPassword: adminProcedure
     .input(z.object({ userId: z.number() }))
     .mutation(async (opts) => {

@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 import { LabeledInput } from "../components/LabeledInput";
+import { useDeleteUserMutation } from "../hooks/useDeleteUserMutation";
 import { useNewUserMutation } from "../hooks/useNewUserMutation";
 import { useQueryGetUsers } from "../hooks/useQueryGetUsers";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
@@ -72,6 +73,7 @@ const UserContextMenu = memo(function UserContextMenu({
 }: UserContextMenuProps) {
   const menuRef = useRef<Menu>(null!);
   const resetPwMutation = useResetPasswordMutation();
+  const deleteUserMutation = useDeleteUserMutation();
 
   const itemRenderer = (item: MenuItem) => {
     return (
@@ -106,7 +108,14 @@ const UserContextMenu = memo(function UserContextMenu({
           label: "Delete",
           icon: "pi pi-trash",
           template: itemRenderer,
-          data: { onClick: () => console.log("delete") },
+          data: {
+            onClick: (
+              e: Parameters<NonNullable<ButtonProps["onClick"]>>[0],
+            ) => {
+              deleteUserMutation.mutate({ userId: id });
+              menuRef.current.toggle(e);
+            },
+          },
         },
       ],
     },

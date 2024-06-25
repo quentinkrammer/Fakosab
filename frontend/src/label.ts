@@ -5,4 +5,6 @@ export const label = {
   passwordResetSuccessfull: "Password has been changed successfully",
   resetCodeGenerated: "Password reset code has been generated successfully",
   newUsernameRegistered: "New username has been registered successfully",
+  userWasDeleted: (user: string) =>
+    `The user "${user}" was deleted successfully`,
 };
