@@ -24,13 +24,18 @@ export type InsertUsers = InferInsertModel<typeof users>;
 
 export const projects = createTable("projects", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  name: text("name", { length: 512 }),
+  name: text("name", { length: 512 }).notNull().unique(),
+  disabled: int("is_disabled", { mode: "boolean" }).default(false),
 });
+export type SelectProjects = InferSelectModel<typeof projects>;
+export type InsertProjects = InferInsertModel<typeof projects>;
 
 export const bookings = createTable("bookings", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   projectId: int("project_id").references(() => projects.id),
   userId: int("user_id").references(() => users.id),
-  distance: int("distance_m", { mode: "number" }),
-  date: int("isAdmin", { mode: "timestamp" }),
+  distance: int("distance_m", { mode: "number" }).notNull(),
+  date: int("isAdmin", { mode: "timestamp" }).notNull(),
 });
+export type SelectBookings = InferSelectModel<typeof users>;
+export type InsertBookings = InferInsertModel<typeof users>;
