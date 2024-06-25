@@ -28,7 +28,7 @@ import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
 type DataValue<U extends Array<UnknownObject> | undefined> =
   keyof NonNullable<U>[number];
 
-type UserValue = DataValue<RouterOutput["getUsers"]>;
+type UserValue = DataValue<RouterOutput["users"]["getUsers"]>;
 
 export function UsersPage() {
   const { isLoading, data: allUsers } = useQueryGetUsers();
@@ -79,7 +79,9 @@ export function UsersPage() {
         <Column
           header="Actions"
           body={(d) => (
-            <UserContextMenu id={(d as RouterOutput["getUsers"][number]).id} />
+            <UserContextMenu
+              id={(d as RouterOutput["users"]["getUsers"][number]).id}
+            />
           )}
         />
       </DataTable>
@@ -87,7 +89,10 @@ export function UsersPage() {
     </>
   );
 }
-type UserContextMenuProps = Pick<RouterOutput["getUsers"][number], "id">;
+type UserContextMenuProps = Pick<
+  RouterOutput["users"]["getUsers"][number],
+  "id"
+>;
 const UserContextMenu = memo(function UserContextMenu({
   id,
 }: UserContextMenuProps) {

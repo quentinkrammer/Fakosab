@@ -6,9 +6,9 @@ export function useResetPasswordMutation() {
   const toastMessage = useToastMessage();
   const utils = trpc.useUtils();
 
-  return trpc.resetPassword.useMutation({
+  return trpc.users.resetPassword.useMutation({
     onSuccess() {
-      utils.getUsers.invalidate();
+      utils.users.getUsers.invalidate();
       toastMessage({
         severity: "success",
         detail: label.resetCodeGenerated,

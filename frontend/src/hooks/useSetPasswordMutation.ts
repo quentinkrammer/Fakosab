@@ -5,7 +5,7 @@ import { trpc } from "../trpc";
 export function useSetPasswordMutation() {
   const toastMessage = useToastMessage();
 
-  return trpc.setPassword.useMutation({
+  return trpc.users.setPassword.useMutation({
     onSuccess() {
       toastMessage({
         severity: "success",

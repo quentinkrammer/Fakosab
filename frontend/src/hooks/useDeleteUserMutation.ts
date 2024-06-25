@@ -6,9 +6,9 @@ export function useDeleteUserMutation() {
   const toastMessage = useToastMessage();
   const utils = trpc.useUtils();
 
-  return trpc.deleteUser.useMutation({
+  return trpc.users.deleteUser.useMutation({
     onSuccess(res) {
-      utils.getUsers.invalidate();
+      utils.users.getUsers.invalidate();
       toastMessage({
         severity: "success",
         detail: label.userWasDeleted(res.username),

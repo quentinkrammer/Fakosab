@@ -6,9 +6,9 @@ export function useNewUserMutation(onSuccess: () => void) {
   const toastMessage = useToastMessage();
   const utils = trpc.useUtils();
 
-  return trpc.newUser.useMutation({
+  return trpc.users.newUser.useMutation({
     onSuccess() {
-      utils.getUsers.invalidate(),
+      utils.users.getUsers.invalidate(),
         toastMessage({
           severity: "success",
           detail: label.newUsernameRegistered,

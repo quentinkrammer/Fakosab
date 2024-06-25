@@ -2,17 +2,17 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { env } from "../env.js";
-import { users } from "./db/schema.js";
-import { resetPassword } from "./db/user.service.js";
+import { env } from "../../env.js";
+import { users } from "../db/schema.js";
+import { resetPassword } from "../db/user.service.js";
 import {
   adminProcedure,
   authedProcedure,
   publicProcedure,
   trpc,
-} from "./trpc.js";
+} from "../trpc.js";
 
-export const trpcRouter = trpc.router({
+export const userRouter = trpc.router({
   getMyUserData: authedProcedure.query((opts) => {
     const user = opts.ctx.user;
     return user;
@@ -104,5 +104,3 @@ export const trpcRouter = trpc.router({
       return updatedUser;
     }),
 });
-
-export type AppRouter = typeof trpcRouter;
