@@ -10,7 +10,7 @@ import {
   authedProcedure,
   publicProcedure,
   trpc,
-} from "../trpc.js";
+} from "../trcp/trpc.js";
 
 export const userRouter = trpc.router({
   getMyUserData: authedProcedure.query((opts) => {

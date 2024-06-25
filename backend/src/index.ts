@@ -6,8 +6,8 @@ import memoryStore from "memorystore";
 import passport from "passport";
 import { env } from "../env.js";
 import { authRouter } from "./authRouter.js";
-import { trpcRouter } from "./trcpRouter/trpcRouter.js";
-import { createContext } from "./trpc.js";
+import { createContext } from "./trcp/trpc.js";
+import { trpcRouter } from "./trcp/trpcRouter.js";
 
 const MemoryStore = memoryStore(session);
 

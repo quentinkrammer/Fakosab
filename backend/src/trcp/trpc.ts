@@ -2,9 +2,9 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
-import { env } from "../env.js";
-import { db } from "./db/drizzle.js";
-import { mockAdmin } from "./db/seedHelper.js";
+import { env } from "../../env.js";
+import { db } from "./../db/drizzle.js";
+import { mockAdmin } from "./../db/seedHelper.js";
 
 const userSchema = z.object({
   username: z.string(),
