@@ -68,6 +68,7 @@ export function NavBar() {
               style={{
                 textDecoration: "none",
               }}
+              key={route}
             >
               <span
                 onClick={() => setVisible(false)}

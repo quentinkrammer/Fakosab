@@ -62,6 +62,9 @@ export function UsersPage() {
         globalFilterMatchMode="contains"
         globalFilterFields={["username" satisfies UserValue]}
         globalFilter={filter}
+        paginator
+        rows={5}
+        rowsPerPageOptions={[5, 10, 25, 100]}
       >
         <Column
           field={"username" satisfies UserValue}
