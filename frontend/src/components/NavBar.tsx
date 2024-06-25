@@ -24,6 +24,12 @@ const LINK_CONFIG: Array<{
     isAdminOnly: true,
   },
   {
+    label: "Projects",
+    icon: "pi pi-clipboard",
+    route: PAGES.projects,
+    isAdminOnly: true,
+  },
+  {
     label: "Excel Export",
     icon: "pi pi-file-excel",
     route: PAGES.export,

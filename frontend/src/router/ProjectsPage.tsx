@@ -4,101 +4,58 @@ import { Column } from "primereact/column";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataTable } from "primereact/datatable";
 import { Dialog, DialogProps } from "primereact/dialog";
-import { InputText, InputTextProps } from "primereact/inputtext";
 import { Menu } from "primereact/menu";
 import { MenuItem } from "primereact/menuitem";
 import { ProgressSpinner } from "primereact/progressspinner";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  memo,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, memo, useCallback, useRef, useState } from "react";
 import { LabeledInput } from "../components/LabeledInput";
 import { useDeleteUserMutation } from "../hooks/useDeleteUserMutation";
-import { useNewUserMutation } from "../hooks/useNewUserMutation";
-import { useQueryGetUsers } from "../hooks/useQueryGetUsers";
-import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
+import { useNewProjectMutation } from "../hooks/useNewProjectMutation";
+import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
 import { useResetPasswordMutation } from "../hooks/useResetPasswordMutation";
 import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
 
 type DataValue<U extends Array<UnknownObject> | undefined> =
   keyof NonNullable<U>[number];
 
-type UserValue = DataValue<RouterOutput["users"]["getUsers"]>;
+type ProjectsValue = DataValue<RouterOutput["projects"]["getProjects"]>;
 
-export function UsersPage() {
-  const { isLoading, data: allUsers } = useQueryGetUsers();
-  const { data: myUserData } = useQueryMyUserData();
-  const [showAddUserDialog, setShowAddUserDialog] = useState(false);
-  const [filter, setFilter] = useState("");
+export function ProjectsPage() {
+  const { isLoading, data: projects } = useQueryGetProjects();
+  const [showAddProjectDialog, setShowAddProjectDialog] = useState(false);
 
-  const onHide = useCallback(() => setShowAddUserDialog(false), []);
-  const onFilter = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (e) => setFilter(e.target.value),
-    [],
-  );
-
-  const users = useMemo(() => {
-    return allUsers?.filter(({ id }) => id !== myUserData?.id);
-  }, [allUsers, myUserData?.id]);
+  const onHide = useCallback(() => setShowAddProjectDialog(false), []);
+  const onAdd = useCallback(() => setShowAddProjectDialog(true), []);
 
   if (isLoading) return <ProgressSpinner />;
 
   return (
     <>
-      <DataTable
-        value={users}
-        header={
-          <UserTableHeader
-            filterValue={filter}
-            onFilter={onFilter}
-            onAddUser={() => setShowAddUserDialog(true)}
-          />
-        }
-        globalFilterMatchMode="contains"
-        globalFilterFields={["username" satisfies UserValue]}
-        globalFilter={filter}
-        paginator
-        rows={5}
-        rowsPerPageOptions={[5, 10, 25, 100]}
-      >
+      <DataTable value={projects} header={<TableHeader onAddUser={onAdd} />}>
+        <Column field={"name" satisfies ProjectsValue} header="Name" sortable />
         <Column
-          field={"username" satisfies UserValue}
-          header="Username"
+          field={"disabled" satisfies ProjectsValue}
+          header="disabled"
           sortable
         />
         <Column
-          field={"resetPassword" satisfies UserValue}
-          header="PW-Reset Code"
-          sortable
-        />
-        <Column
-          body={(d) => (
-            <UserContextMenu
-              id={(d as RouterOutput["users"]["getUsers"][number]).id}
-              username={
-                (d as RouterOutput["users"]["getUsers"][number]).username
-              }
+          body={(props) => (
+            <ProjectContextMenu
+              {...(props as RouterOutput["projects"]["getProjects"][number])}
             />
           )}
         />
       </DataTable>
-      <AddUserDialog visible={showAddUserDialog} onHide={onHide} />
+      <AddProjectDialog visible={showAddProjectDialog} onHide={onHide} />
     </>
   );
 }
-type UserContextMenuProps = Pick<
-  RouterOutput["users"]["getUsers"][number],
-  "id" | "username"
->;
-const UserContextMenu = memo(function UserContextMenu({
+type ProjectContextMenuProps = RouterOutput["projects"]["getProjects"][number];
+const ProjectContextMenu = memo(function ProjectContextMenu({
   id,
-  username,
-}: UserContextMenuProps) {
+  disabled,
+  name,
+}: ProjectContextMenuProps) {
   const menuRef = useRef<Menu>(null!);
   const resetPwMutation = useResetPasswordMutation();
   const deleteUserMutation = useDeleteUserMutation();
@@ -143,7 +100,7 @@ const UserContextMenu = memo(function UserContextMenu({
             onClick: (e: ButtonEvent) => {
               confirmPopup({
                 target: e.currentTarget,
-                message: `Do you want to permanently delete the user "${username}"?`,
+                message: "Do you want to permanently delete this user?",
                 icon: "pi pi-exclamation-triangle",
                 defaultFocus: "reject",
                 acceptClassName: "p-button-danger",
@@ -183,41 +140,41 @@ const UserContextMenu = memo(function UserContextMenu({
 });
 
 type AddUserDialogProps = Pick<DialogProps, "onHide" | "visible">;
-const AddUserDialog = memo(function AddUserDialog({
+const AddProjectDialog = memo(function AddUserDialog({
   onHide,
   visible,
 }: AddUserDialogProps) {
-  const [newUsername, setNewUsername] = useState("");
+  const [newProject, setNewProject] = useState("");
 
   const onSuccess = useCallback(() => {
-    setNewUsername("");
+    setNewProject("");
     onHide();
   }, [onHide]);
-  const mutation = useNewUserMutation(onSuccess);
+  const mutation = useNewProjectMutation(onSuccess);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setNewUsername(e.target.value);
+    setNewProject(e.target.value);
 
   const onSubmit = () => {
-    mutation.mutate({ username: newUsername });
+    mutation.mutate({ name: newProject });
   };
 
   return (
     <Dialog
       visible={visible}
       onHide={onHide}
-      header={"Create new username"}
+      header={"Create new project"}
       contentStyle={{ display: "flex", flexDirection: "column", gap: "1rem" }}
     >
       <LabeledInput
-        value={newUsername}
+        value={newProject}
         onChange={onChange}
-        label="New username"
+        label="New project name"
       />
       <Button
         style={{ alignSelf: "end" }}
         onClick={onSubmit}
-        disabled={!newUsername}
+        disabled={!newProject}
       >
         Submit
       </Button>
@@ -225,25 +182,14 @@ const AddUserDialog = memo(function AddUserDialog({
   );
 });
 
-type UserTableHeaderProps = {
-  filterValue: InputTextProps["value"];
-  onFilter: InputTextProps["onChange"];
+type TableHeaderProps = {
   onAddUser: ButtonProps["onClick"];
 };
-function UserTableHeader({
-  filterValue,
-  onFilter,
-  onAddUser,
-}: UserTableHeaderProps) {
+function TableHeader({ onAddUser }: TableHeaderProps) {
   return (
     <div style={{ display: "flex" }}>
-      <InputText
-        placeholder="Search username"
-        value={filterValue}
-        onChange={onFilter}
-      />
       <Button style={{ marginLeft: "auto" }} onClick={onAddUser}>
-        Add user
+        Add project
       </Button>
     </div>
   );

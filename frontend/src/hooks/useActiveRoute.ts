@@ -15,6 +15,8 @@ export function useActiveRoute() {
       return PAGES.users;
     case PAGES.export:
       return PAGES.export;
+    case PAGES.projects:
+      return PAGES.projects;
     default:
       assertUnreachable(domain);
   }
