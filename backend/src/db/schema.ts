@@ -21,3 +21,16 @@ export const users = createTable("users", {
 });
 export type SelectUsers = InferSelectModel<typeof users>;
 export type InsertUsers = InferInsertModel<typeof users>;
+
+export const projects = createTable("projects", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 512 }),
+});
+
+export const bookings = createTable("bookings", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  projectId: int("project_id").references(() => projects.id),
+  userId: int("user_id").references(() => users.id),
+  distance: int("distance_m", { mode: "number" }),
+  date: int("isAdmin", { mode: "timestamp" }),
+});
