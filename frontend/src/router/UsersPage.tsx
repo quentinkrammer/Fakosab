@@ -4,11 +4,13 @@ import { Column } from "primereact/column";
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { DataTable } from "primereact/datatable";
 import { Dialog, DialogProps } from "primereact/dialog";
+import { InputText, InputTextProps } from "primereact/inputtext";
 import { Menu } from "primereact/menu";
 import { MenuItem } from "primereact/menuitem";
 import { ProgressSpinner } from "primereact/progressspinner";
 import {
   ChangeEvent,
+  ChangeEventHandler,
   memo,
   useCallback,
   useMemo,
@@ -32,8 +34,13 @@ export function UsersPage() {
   const { isLoading, data: allUsers } = useQueryGetUsers();
   const { data: myUserData } = useQueryMyUserData();
   const [showAddUserDialog, setShowAddUserDialog] = useState(false);
+  const [filter, setFilter] = useState("");
 
   const onHide = useCallback(() => setShowAddUserDialog(false), []);
+  const onFilter = useCallback<ChangeEventHandler<HTMLInputElement>>(
+    (e) => setFilter(e.target.value),
+    [],
+  );
 
   const users = useMemo(() => {
     return allUsers?.filter(({ id }) => id !== myUserData?.id);
@@ -45,7 +52,16 @@ export function UsersPage() {
     <>
       <DataTable
         value={users}
-        header={<UserTableHeader onClick={() => setShowAddUserDialog(true)} />}
+        header={
+          <UserTableHeader
+            filterValue={filter}
+            onFilter={onFilter}
+            onAddUser={() => setShowAddUserDialog(true)}
+          />
+        }
+        globalFilterMatchMode="contains"
+        globalFilterFields={["username" satisfies UserValue]}
+        globalFilter={filter}
       >
         <Column
           field={"username" satisfies UserValue}
@@ -198,11 +214,24 @@ const AddUserDialog = memo(function AddUserDialog({
   );
 });
 
-type UserTableHeaderProps = Pick<ButtonProps, "onClick">;
-function UserTableHeader({ onClick }: UserTableHeaderProps) {
+type UserTableHeaderProps = {
+  filterValue: InputTextProps["value"];
+  onFilter: InputTextProps["onChange"];
+  onAddUser: ButtonProps["onClick"];
+};
+function UserTableHeader({
+  filterValue,
+  onFilter,
+  onAddUser,
+}: UserTableHeaderProps) {
   return (
     <div style={{ display: "flex" }}>
-      <Button style={{ marginLeft: "auto" }} onClick={onClick}>
+      <InputText
+        placeholder="Search username"
+        value={filterValue}
+        onChange={onFilter}
+      />
+      <Button style={{ marginLeft: "auto" }} onClick={onAddUser}>
         Add user
       </Button>
     </div>

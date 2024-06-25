@@ -20,3 +20,10 @@ export function useToastMessage() {
       ...other,
     });
 }
+
+export function useToastRef() {
+  const toastRef = useContext(toastContext);
+  if (!toastRef)
+    throw new Error("hook was called outside of the related context provider");
+  return toastRef;
+}
