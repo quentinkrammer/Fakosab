@@ -1,7 +1,12 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import {
+  InferInsertModel,
+  InferSelectModel,
+  relations,
+  sql,
+} from "drizzle-orm";
 import { int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 /**
@@ -32,10 +37,38 @@ export type InsertProjects = InferInsertModel<typeof projects>;
 
 export const bookings = createTable("bookings", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  projectId: int("project_id").references(() => projects.id),
-  userId: int("user_id").references(() => users.id),
+  projectId: int("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: int("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
   distance: int("distance_m", { mode: "number" }).notNull(),
-  date: int("isAdmin", { mode: "timestamp" }).notNull(),
+  timestamp: text("timestamp").notNull(),
+  changed_time: text("timestamp")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
 });
 export type SelectBookings = InferSelectModel<typeof users>;
 export type InsertBookings = InferInsertModel<typeof users>;
+
+export const userRelations = relations(users, ({ many }) => {
+  return { bookings: many(bookings) };
+});
+
+export const projectRelations = relations(projects, ({ many }) => {
+  return { bookings: many(bookings) };
+});
+
+export const bookingsRelations = relations(bookings, ({ one }) => {
+  return {
+    projects: one(projects, {
+      fields: [bookings.projectId],
+      references: [projects.id],
+    }),
+    user: one(users, {
+      fields: [bookings.userId],
+      references: [users.id],
+    }),
+  };
+});
