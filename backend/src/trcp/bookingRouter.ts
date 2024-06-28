@@ -45,9 +45,20 @@ export const bookingRouter = trpc.router({
       } = opts;
       const newBooking = await db
         .insert(bookings)
-        .values({ userId: user.id, ...input })
+        .values({
+          userId: user.id,
+          distance: input.distance,
+          projectId: input.projectId,
+          timestamp: input.timestamp,
+        })
         .returning();
-      return newBooking[0]!;
+
+      const project = await db.query.projects.findFirst({
+        columns: { name: true },
+        where: (project, { eq }) => eq(project.id, input.projectId),
+      });
+
+      return { ...newBooking[0]!, projectName: project?.name };
     }),
   editBooking: authedProcedure
     .input(

@@ -11,6 +11,7 @@ import { useCallback, useMemo, useState } from "react";
 import { LabeledInput } from "../components/LabeledInput";
 import { Password } from "../components/Password";
 import { useToastMessage } from "../context/toastContext";
+import { useNewBookingMutation } from "../hooks/useNewBookingMutation";
 import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { useSetPasswordMutation } from "../hooks/useSetPasswordMutation";
@@ -179,6 +180,7 @@ function BookingForm() {
   const [date, setDate] = useState<Date>(() => {
     return new Date();
   });
+  const bookingMutation = useNewBookingMutation();
 
   const onDistance = useCallback<NonNullable<InputTextProps["onChange"]>>(
     (e) => {
@@ -189,7 +191,17 @@ function BookingForm() {
     [],
   );
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    const distanceMeters = convertDistanceStringToMeters(distance);
+    if (!distanceMeters || !project || !date) return;
+
+    bookingMutation.mutate({
+      distance: distanceMeters,
+      projectId: project.id,
+      timestamp: `${date}`,
+    });
+  };
+
   return (
     <div
       style={{
@@ -245,4 +257,12 @@ function useEnabledProjects() {
   const projects = useMemo(() => res.data ?? [], [res.data]);
 
   return projects.filter((project) => Boolean(!project.disabled));
+}
+
+function convertDistanceStringToMeters(value: string) {
+  if (!isNumberString(value)) return;
+  const valueFloat = parseFloat(value) * 1000;
+  const valueInt = Math.round(valueFloat);
+
+  return valueInt;
 }
