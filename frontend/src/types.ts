@@ -9,3 +9,10 @@ export type RouterInput = inferRouterInputs<AppRouter>;
 export type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type ButtonEvent = Parameters<NonNullable<ButtonProps["onClick"]>>[0];
+
+type DataValue<U extends Array<UnknownObject> | undefined> =
+  keyof NonNullable<U>[number];
+
+export type Projects = RouterOutput["projects"]["getProjects"];
+export type Project = Projects[number];
+export type ProjectValue = DataValue<Projects>;

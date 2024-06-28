@@ -16,13 +16,8 @@ import { useNewProjectMutation } from "../hooks/useNewProjectMutation";
 import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
 import { useRenameProjectMutation } from "../hooks/useRenameProjectMutation";
 import { useSetProjectDisabledMutation } from "../hooks/useSetProjectDisabledMutation";
-import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
+import { ButtonEvent, Project, ProjectValue, RouterOutput } from "../types";
 
-type DataValue<U extends Array<UnknownObject> | undefined> =
-  keyof NonNullable<U>[number];
-
-type ProjectsValue = DataValue<RouterOutput["projects"]["getProjects"]>;
-type Project = RouterOutput["projects"]["getProjects"][number];
 type ProjectShort = Pick<Project, "id" | "name">;
 
 export function ProjectsPage() {
@@ -47,10 +42,10 @@ export function ProjectsPage() {
   return (
     <>
       <DataTable value={projects} header={<TableHeader onAddUser={onAdd} />}>
-        <Column field={"name" satisfies ProjectsValue} header="Name" sortable />
+        <Column field={"name" satisfies ProjectValue} header="Name" sortable />
         <Column
           header="Is Active"
-          field={"disabled" satisfies ProjectsValue}
+          field={"disabled" satisfies ProjectValue}
           sortable
           body={(props) =>
             !(props as RouterOutput["projects"]["getProjects"][number]).disabled

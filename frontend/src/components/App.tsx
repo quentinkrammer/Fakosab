@@ -28,7 +28,7 @@ function App() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          paddingTop: "1rem",
+          paddingTop: "1.5rem",
         }}
       >
         <Outlet />

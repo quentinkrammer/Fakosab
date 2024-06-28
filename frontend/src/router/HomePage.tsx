@@ -1,13 +1,20 @@
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import { FloatLabel } from "primereact/floatlabel";
+import { InputTextProps } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { TabPanel, TabView } from "primereact/tabview";
-import { useCallback, useState } from "react";
+import { Nullable } from "primereact/ts-helpers";
+import { useCallback, useMemo, useState } from "react";
 import { LabeledInput } from "../components/LabeledInput";
 import { Password } from "../components/Password";
 import { useToastMessage } from "../context/toastContext";
+import { useQueryGetProjects } from "../hooks/useQueryGetProjects";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { useSetPasswordMutation } from "../hooks/useSetPasswordMutation";
 import { trpc } from "../trpc";
+import { Project, ProjectValue } from "../types";
+import { isNumberString } from "../utils/isNumberString";
 import { label } from "./../label";
 
 export function HomePage() {
@@ -154,6 +161,43 @@ function NewPasswordForm() {
 }
 
 function BookingForm() {
-  // const { data } = useQueryMyUserData();
-  return `Home`;
+  const projects = useEnabledProjects();
+  const [project, setProject] = useState<Nullable<Project>>(null);
+  const [distance, setDistance] = useState("");
+
+  const onDistance = useCallback<NonNullable<InputTextProps["onChange"]>>(
+    (e) => {
+      const newValue = e.target.value;
+      if (!isNumberString(newValue)) return;
+      setDistance(newValue.replace(",", "."));
+    },
+    [],
+  );
+
+  return (
+    <div>
+      <FloatLabel pt={{ root: { style: { width: "100%" } } }}>
+        <Dropdown
+          value={project}
+          onChange={(e) => setProject(e.value)}
+          options={projects}
+          optionLabel={"name" satisfies ProjectValue}
+          style={{ minWidth: "10rem", width: "100%" }}
+        />
+        <label htmlFor="dd-project">Project</label>
+      </FloatLabel>
+      <LabeledInput
+        value={distance}
+        onChange={onDistance}
+        rightContent={"km"}
+      />
+    </div>
+  );
+}
+
+function useEnabledProjects() {
+  const res = useQueryGetProjects();
+  const projects = useMemo(() => res.data ?? [], [res.data]);
+
+  return projects.filter((project) => Boolean(!project.disabled));
 }
