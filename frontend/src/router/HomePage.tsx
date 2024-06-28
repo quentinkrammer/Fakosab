@@ -1,4 +1,6 @@
+import { isNil } from "lodash";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputTextProps } from "primereact/inputtext";
@@ -62,7 +64,14 @@ function LoginForm() {
   }, [password, toast, username, utils]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+        paddingTop: "2rem",
+      }}
+    >
       <LabeledInput
         value={username}
         onChange={(e) => setUsername(e.target.value)}
@@ -118,7 +127,8 @@ function NewPasswordForm() {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "1rem",
+        gap: "2rem",
+        paddingTop: "2rem",
       }}
     >
       <LabeledInput
@@ -160,10 +170,15 @@ function NewPasswordForm() {
   );
 }
 
+const PROJECT_DROPDOWN_ID = "dd-project";
+const DATE_CALENDAR_ID = "calendar-date";
 function BookingForm() {
   const projects = useEnabledProjects();
   const [project, setProject] = useState<Nullable<Project>>(null);
   const [distance, setDistance] = useState("");
+  const [date, setDate] = useState<Date>(() => {
+    return new Date();
+  });
 
   const onDistance = useCallback<NonNullable<InputTextProps["onChange"]>>(
     (e) => {
@@ -174,23 +189,53 @@ function BookingForm() {
     [],
   );
 
+  const onSubmit = () => {};
   return (
-    <div>
-      <FloatLabel pt={{ root: { style: { width: "100%" } } }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+        paddingTop: "2rem",
+      }}
+    >
+      <FloatLabel>
         <Dropdown
           value={project}
           onChange={(e) => setProject(e.value)}
           options={projects}
           optionLabel={"name" satisfies ProjectValue}
           style={{ minWidth: "10rem", width: "100%" }}
+          inputId={PROJECT_DROPDOWN_ID}
         />
-        <label htmlFor="dd-project">Project</label>
+        <label htmlFor={PROJECT_DROPDOWN_ID}>Project</label>
       </FloatLabel>
       <LabeledInput
         value={distance}
+        label="Distance"
         onChange={onDistance}
         rightContent={"km"}
       />
+      <FloatLabel>
+        <Calendar
+          value={date}
+          onChange={(e) => {
+            const newDate = e.value;
+            if (isNil(newDate)) return;
+            setDate(newDate);
+          }}
+          style={{ width: "100%" }}
+          inputId={DATE_CALENDAR_ID}
+        />
+        <label htmlFor={DATE_CALENDAR_ID}>Date</label>
+      </FloatLabel>
+      <Button
+        style={{ alignSelf: "end" }}
+        onClick={onSubmit}
+        disabled={!distance || !project}
+      >
+        Submit
+      </Button>
     </div>
   );
 }

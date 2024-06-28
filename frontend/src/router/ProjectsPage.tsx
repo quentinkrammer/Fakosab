@@ -183,7 +183,12 @@ const AddDialog = memo(function AddDialog({ onHide, visible }: AddDialogProps) {
       visible={visible}
       onHide={onHide}
       header={"Create new project"}
-      contentStyle={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      contentStyle={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+        paddingTop: "rem",
+      }}
     >
       <LabeledInput
         value={newProject}
@@ -233,7 +238,12 @@ const RenameDialog = memo(function AddDialog({
       visible={!!name}
       onHide={onHide}
       header={`Rename project "${name}"`}
-      contentStyle={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      contentStyle={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+        paddingTop: "2rem",
+      }}
     >
       <LabeledInput
         value={newName}

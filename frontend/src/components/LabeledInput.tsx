@@ -35,7 +35,7 @@ export function LabeledInput({
   );
 
   return (
-    <div style={{ paddingTop: "2rem" }}>
+    <div>
       <FloatLabel>
         <InputText
           {...forwardInputProps}

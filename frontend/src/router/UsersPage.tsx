@@ -207,7 +207,12 @@ const AddUserDialog = memo(function AddUserDialog({
       visible={visible}
       onHide={onHide}
       header={"Create new username"}
-      contentStyle={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      contentStyle={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+        paddingTop: "2rem",
+      }}
     >
       <LabeledInput
         value={newUsername}
