@@ -1,3 +1,4 @@
+import { UniqueBookingConstraintError } from "../components/UniqueBookingConstraintError";
 import { useToastMessage } from "../context/toastContext";
 import { trpc } from "../trpc";
 
@@ -19,7 +20,8 @@ export function useNewBookingMutation(onSuccess?: () => void) {
       console.error(e);
       toastMessage({
         severity: "error",
-        detail: e.data?.code,
+        detail: <UniqueBookingConstraintError error={e} />,
+        life: 5000,
       });
     },
   });
