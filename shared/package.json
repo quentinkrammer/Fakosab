@@ -1,0 +1,14 @@
+{
+  "name": "shared",
+  "type": "module",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.2"
+  }
+}

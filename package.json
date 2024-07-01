@@ -6,6 +6,7 @@
   },
   "workspaces": [
     "backend",
-    "frontend"
+    "frontend",
+    "shared"
   ]
 }
