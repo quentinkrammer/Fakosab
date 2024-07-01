@@ -77,6 +77,7 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
           onChange={(e) => {
             const newDate = e.value;
             if (isNil(newDate)) return;
+            newDate.setHours(12);
             setDate(newDate);
           }}
           style={{ width: "100%" }}

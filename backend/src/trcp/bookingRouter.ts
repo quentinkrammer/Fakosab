@@ -3,6 +3,7 @@ import { isUndefined, omitBy } from "lodash";
 import { z } from "zod";
 import { bookings } from "../db/schema.js";
 import { adminProcedure, authedProcedure, trpc } from "../trcp/trpc.js";
+import { convertDate } from "../utils/convertDate.js";
 import { omit } from "../utils/omit.js";
 
 export const bookingRouter = trpc.router({
@@ -37,7 +38,7 @@ export const bookingRouter = trpc.router({
   createBooking: authedProcedure
     .input(
       z.object({
-        timestamp: z.string(),
+        timestamp: z.string().transform((date) => convertDate(date)),
         projectId: z.number(),
         distance: z.number(),
       }),
@@ -70,7 +71,9 @@ export const bookingRouter = trpc.router({
         id: z.number(),
         projectId: z.optional(z.number()),
         distance: z.optional(z.number()),
-        timestamp: z.optional(z.string()),
+        timestamp: z.optional(
+          z.string().transform((date) => convertDate(date)),
+        ),
       }),
     )
     .mutation(async (opts) => {
@@ -80,9 +83,11 @@ export const bookingRouter = trpc.router({
       } = opts;
 
       const changedValues = omitBy(omit(input, "id"), isUndefined);
+      const changedTime = convertDate(`${new Date()}`);
+
       const newBooking = await db
         .update(bookings)
-        .set(changedValues)
+        .set({ ...changedValues, changedTime })
         .where(and(eq(bookings.userId, user.id), eq(bookings.id, input.id)))
         .returning();
       return newBooking[0]!;

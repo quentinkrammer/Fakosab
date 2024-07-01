@@ -7,7 +7,12 @@ import {
   relations,
   sql,
 } from "drizzle-orm";
-import { int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
+import {
+  int,
+  sqliteTableCreator,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -35,22 +40,38 @@ export const projects = createTable("projects", {
 export type SelectProjects = InferSelectModel<typeof projects>;
 export type InsertProjects = InferInsertModel<typeof projects>;
 
-export const bookings = createTable("bookings", {
-  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  projectId: int("project_id")
-    .references(() => projects.id, { onDelete: "cascade" })
-    .notNull(),
-  userId: int("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  distance: int("distance_m", { mode: "number" }).notNull(),
-  timestamp: text("timestamp").notNull(),
-  changed_time: text("timestamp")
-    .notNull()
-    .default(sql`(CURRENT_TIMESTAMP)`),
-});
+export const bookings = createTable(
+  "bookings",
+  {
+    id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    projectId: int("project_id")
+      .references(() => projects.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: int("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    distance: int("distance_m", { mode: "number" }).notNull(),
+    timestamp: text("timestamp").notNull(),
+    changedTime: text("changed_time")
+      .notNull()
+      .default(sql`(CURRENT_DATE)`),
+  },
+  (table) => {
+    return {
+      bookingIdx: uniqueIndex("booking_index").on(
+        table.userId,
+        table.projectId,
+        table.timestamp,
+      ),
+    };
+  },
+);
 export type SelectBookings = InferSelectModel<typeof users>;
 export type InsertBookings = InferInsertModel<typeof users>;
+
+export const date = createTable("date", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+});
 
 export const userRelations = relations(users, ({ many }) => {
   return { bookings: many(bookings) };
