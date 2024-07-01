@@ -41,7 +41,7 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
     bookingMutation.mutate({
       distance: distanceMeters,
       projectId: project.id,
-      timestamp: `${date}`,
+      timestamp: date,
     });
   };
 

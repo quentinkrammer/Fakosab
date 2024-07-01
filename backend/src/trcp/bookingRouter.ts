@@ -6,6 +6,8 @@ import { adminProcedure, authedProcedure, trpc } from "../trcp/trpc.js";
 import { convertDate } from "../utils/convertDate.js";
 import { omit } from "../utils/omit.js";
 
+const dateSchema = z.coerce.date();
+
 export const bookingRouter = trpc.router({
   getAllBookings: adminProcedure.query(async (opts) => {
     const {
@@ -38,7 +40,7 @@ export const bookingRouter = trpc.router({
   createBooking: authedProcedure
     .input(
       z.object({
-        timestamp: z.string().transform((date) => convertDate(date)),
+        timestamp: dateSchema.transform((date) => convertDate(date)),
         projectId: z.number(),
         distance: z.number(),
       }),
@@ -72,7 +74,7 @@ export const bookingRouter = trpc.router({
         projectId: z.optional(z.number()),
         distance: z.optional(z.number()),
         timestamp: z.optional(
-          z.string().transform((date) => convertDate(date)),
+          dateSchema.transform((date) => convertDate(date)),
         ),
       }),
     )
@@ -83,7 +85,7 @@ export const bookingRouter = trpc.router({
       } = opts;
 
       const changedValues = omitBy(omit(input, "id"), isUndefined);
-      const changedTime = convertDate(`${new Date()}`);
+      const changedTime = convertDate(new Date());
 
       const newBooking = await db
         .update(bookings)
