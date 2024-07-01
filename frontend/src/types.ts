@@ -16,3 +16,11 @@ type DataValue<U extends Array<UnknownObject> | undefined> =
 export type Projects = RouterOutput["projects"]["getProjects"];
 export type Project = Projects[number];
 export type ProjectValue = DataValue<Projects>;
+
+type Users = RouterOutput["users"]["getUsers"];
+export type User = Users[number];
+export type UserValue = DataValue<Users>;
+
+type Bookings = RouterOutput["bookings"]["getMyBookings"];
+export type Booking = Bookings[number];
+export type BookingValue = DataValue<Bookings>;

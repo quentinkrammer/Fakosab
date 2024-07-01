@@ -27,6 +27,10 @@ export const bookingRouter = trpc.router({
       where: (booking, { eq }) => eq(booking.userId, user.id),
       columns: { userId: false },
       orderBy: (booking, { desc }) => [desc(booking.timestamp)],
+      with: {
+        user: { columns: { username: true } },
+        projects: { columns: { name: true } },
+      },
     });
     return myBookings;
   }),
@@ -60,7 +64,7 @@ export const bookingRouter = trpc.router({
 
       return { ...newBooking[0]!, projectName: project?.name };
     }),
-  editBooking: authedProcedure
+  editMyBooking: authedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -83,7 +87,21 @@ export const bookingRouter = trpc.router({
         .returning();
       return newBooking[0]!;
     }),
-  deleteBooking: authedProcedure
+  deleteMyBooking: authedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async (opts) => {
+      const {
+        ctx: { db, user },
+        input,
+      } = opts;
+
+      const deletedBooking = await db
+        .delete(bookings)
+        .where(and(eq(bookings.id, input.id), eq(bookings.userId, user.id)))
+        .returning();
+      return deletedBooking[0]!;
+    }),
+  deleteBooking: adminProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async (opts) => {
       const {

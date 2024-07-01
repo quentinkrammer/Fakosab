@@ -9,6 +9,8 @@ export const label = {
   projectAvailabilityChanged: "Project availablity changed sucessfully",
   projectDeleted: (name: string) =>
     `Project "${name}" has been deleted successfully`,
+  bookingDeleted: (id: string) =>
+    `Booking with ID "${id}" has been deleted successfully`,
   userWasDeleted: (user: string) =>
     `User "${user}" has been deleted successfully`,
 };

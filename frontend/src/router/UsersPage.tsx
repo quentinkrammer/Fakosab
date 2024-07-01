@@ -23,12 +23,7 @@ import { useNewUserMutation } from "../hooks/useNewUserMutation";
 import { useQueryGetUsers } from "../hooks/useQueryGetUsers";
 import { useQueryMyUserData } from "../hooks/useQueryMyUserData";
 import { useResetPasswordMutation } from "../hooks/useResetPasswordMutation";
-import { ButtonEvent, RouterOutput, UnknownObject } from "../types";
-
-type DataValue<U extends Array<UnknownObject> | undefined> =
-  keyof NonNullable<U>[number];
-
-type UserValue = DataValue<RouterOutput["users"]["getUsers"]>;
+import { ButtonEvent, RouterOutput, User, UserValue } from "../types";
 
 export function UsersPage() {
   const { isLoading, data: allUsers } = useQueryGetUsers();
@@ -79,10 +74,8 @@ export function UsersPage() {
         <Column
           body={(d) => (
             <UserContextMenu
-              id={(d as RouterOutput["users"]["getUsers"][number]).id}
-              username={
-                (d as RouterOutput["users"]["getUsers"][number]).username
-              }
+              id={(d as User).id}
+              username={(d as User).username}
             />
           )}
         />
